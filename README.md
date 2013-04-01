@@ -4,6 +4,7 @@ Quickview
 Watch videos without leaving your YouTube subscriptions feed page.
 
 ##What?
+![A sreenshot](https://raw.github.com/ngzhian/quickview/master/ss.png)
 A div with an embedded iframe shows up when you mouse over the title of the video.
 
 Click outside of the video or press any key to end the video.
@@ -19,7 +20,7 @@ DOM manipulation, mouse events. Uses iframe to embed video.
 
 ##Who?
 Hi, people call me Zhi An, but you can call me Tonight,
-and I made this because I like to watch youtube videos and I don't like to click that much.
+and I made this because I like to watch YouTube videos and I don't like to click that much.
 
 ##Bugs.
 This is a weeknight hack, so there are many many many bugs and it looks ugly.
