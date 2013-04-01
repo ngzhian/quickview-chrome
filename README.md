@@ -18,6 +18,10 @@ A page where you can scroll forever AND watch videos.
 This is a Chrome/Chromium extension, uses jQuery to do some simple attribute extraction,
 DOM manipulation, mouse events. Uses iframe to embed video.
 
+And you may ask, why is this not in the web store? I just don't think it has a place there, yet.
+
+And it costs $5 :(
+
 ##Who?
 Hi, people call me Zhi An, but you can call me Tonight,
 and I made this because I like to watch YouTube videos and I don't like to click that much.
