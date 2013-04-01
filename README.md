@@ -5,6 +5,7 @@ Watch videos without leaving your YouTube subscriptions feed page.
 
 ##What?
 ![A sreenshot](https://raw.github.com/ngzhian/quickview/master/ss.png)
+
 A div with an embedded iframe shows up when you mouse over the title of the video.
 
 Click outside of the video or press any key to end the video.
@@ -17,6 +18,11 @@ A page where you can scroll forever AND watch videos.
 ##How?
 This is a Chrome/Chromium extension, uses jQuery to do some simple attribute extraction,
 DOM manipulation, mouse events. Uses iframe to embed video.
+
+To use this, `git clone https://github.com/ngzhian/quickview.git`,
+then go to `chrome://extensions` and turn on Developer mode.
+Finally just click the "Load unpacked extension..." button and browse
+to where you cloned the repository. Hopefully everything works fine!
 
 And you may ask, why is this not in the web store? I just don't think it has a place there, yet.
 
