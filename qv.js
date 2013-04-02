@@ -24,24 +24,41 @@ var qv = function() {
         return (document.width - 560) / 2;
     }
 
-    $(document).click(function() {
-        clear_all();
-    }).keypress(function() {
-        clear_all();
-    });
 
-    $('.feed-item-content-wrapper').each(function(index){
-        var itemid = $(this).attr("data-context-item-id");
-        $(this).find('a.feed-video-title').mouseover(function(e) {
-            if (shown == false || shown_id != itemid) {
-                clear_all();
-                $(this).append(p1 + itemid + p2);
-                $(this).children(".quickview").css("display", "block")
-            .css("left", get_good_x())
-            .css("top", get_good_y(e.screenY));
-        shown = true;
-        shown_id = itemid;
-            }
+    function attach_clear_events() {
+        $(document).click(function() {
+            clear_all();
+        }).keypress(function() {
+            clear_all();
         });
-    });
+    }
+
+
+    function reattach_events_on_feed_load() {
+        $('.feed-container').on('DOMNodeInserted DOMNodeRemoved', function() {
+            attach_events_for_each_video();
+        });
+    }
+
+
+    function attach_events_for_each_video() {
+        $('.feed-item-content-wrapper').each(function(index){
+            var itemid = $(this).attr("data-context-item-id");
+            $(this).find('a.feed-video-title').mouseover(function(e) {
+                if (shown == false || shown_id != itemid) {
+                    clear_all();
+                    $(this).append(p1 + itemid + p2);
+                    $(this).children(".quickview").css("display", "block")
+                .css("left", get_good_x())
+                .css("top", get_good_y(e.screenY));
+            shown = true;
+            shown_id = itemid;
+                }
+            });
+        });
+    }
+
+    attach_events_for_each_video();
+    reattach_events_on_feed_load();
+    attach_clear_events();
 }();
