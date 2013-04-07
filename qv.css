@@ -1,4 +1,42 @@
-.quickview {
+.qv {
     display: none;
     position: fixed;
+    z-index: 999;
+    left: 250px;
+    //background: blue;
+    width: 70%;
+    height: 315px;
+    border: 1px solid #F1F1F1;
+}
+
+.qv iframe {
+    float: left;
+}
+
+.qv-comments {
+    background: #F9F9F9;
+    height: 315px;
+    overflow: auto;
+    font: Sans;
+    font-size: 100%;
+    line-height: 1.5em;
+    color: #999;
+}
+
+.qv-comment {
+    padding: 10px;
+}
+
+.qv-content {
+    color: #333;
+    font-size: 1.125em;
+}
+
+.qv-author {
+    font-size: 0.75em;
+    margin-right: 1em;
+}
+
+.qv-date {
+    font-size: 0.75em;
 }

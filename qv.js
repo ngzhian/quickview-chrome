@@ -1,13 +1,58 @@
 var qv = function() {
-    var p1 = '<div class="quickview"><iframe width="560" height="315" src="http://www.youtube.com/embed/';
-    var p2= '?autoplay=1" frameborder="0" allowfullscreen=""></iframe></div>';
     var shown = false;
     var shown_id = null;
 
-    function clear_all() {
-        $(".quickview").css("display", "none");
-        $(".quickview").remove();
-        shown = false;
+    /* creates a quickview div and adds it as a sibling of the
+     * element (h4) which was hovered.
+     * @element: element that user hovered over to trigger quickview
+     * @v_id: id of video
+     */
+    var make_qv = function(element, v_id) {
+        element.after('<div class="qv"></div>');
+        var qv = element.next('.qv');
+
+        // adds video iframe
+        qv.prepend(function() {
+            return '<iframe width="560" height="315"' + 
+            ' src="http://www.youtube.com/embed/' + v_id +
+            '?autoplay=1" frameborder="0" allowfullscreen=""></iframe>';
+        });
+
+        // show the video
+        qv.css("display", "block");
+
+        // adds comments async
+        $.get(
+                'https://gdata.youtube.com/feeds/api/videos/'  + v_id + '/comments',
+                function(data) {
+                    var comments = '<div class="qv-comments">';
+                    $('entry', data).each(function() {
+                        comments += form_nice_comment($(this))
+                    });
+                    comments += '</div>';
+                    qv.append(comments);
+                });
+
+        function form_nice_comment(entry) {
+            var author = entry.find('author').find('name').text();
+            var date = entry.find('published').text();
+            var content = entry.find('content').text();
+
+            var comment = '<div class="qv-comment">' +
+                '<span class="qv-author">' + author + '</span>' +
+                '<span class="qv-date">' + form_nice_date(date) + '</span>' +
+                '<p class="qv-content">' + content + '</p>' +
+                '</div>';
+            return comment;
+        }
+
+        /* @date is in the format yyyy-mm-ddThh:mm:ss.000Z
+        */
+        function form_nice_date(date) {
+            return date.slice(5,10) + " " + date.slice(11,16);
+        }
+
+        return qv;
     }
 
     function get_good_y(mouse_y) {
@@ -19,27 +64,11 @@ var qv = function() {
         else return 0;
     }
 
-    function get_good_x() {
-        // center the youtube iframe
-        return (document.width - 560) / 2;
+    function clear_all() {
+        $(".qv").css("display", "none");
+        $(".qv").remove();
+        shown = false;
     }
-
-
-    function attach_clear_events() {
-        $(document).click(function() {
-            clear_all();
-        }).keypress(function() {
-            clear_all();
-        });
-    }
-
-
-    function reattach_events_on_feed_load() {
-        $('.feed-container').on('DOMNodeInserted DOMNodeRemoved', function() {
-            attach_events_for_each_video();
-        });
-    }
-
 
     function attach_events_for_each_video() {
         $('.feed-item-content-wrapper').each(function(index){
@@ -47,9 +76,7 @@ var qv = function() {
             $(this).find('a.feed-video-title').mouseover(function(e) {
                 if (shown == false || shown_id != itemid) {
                     clear_all();
-                    $(this).append(p1 + itemid + p2);
-                    $(this).children(".quickview").css("display", "block")
-                .css("left", get_good_x())
+                    make_qv($(this).parent(), itemid)
                 .css("top", get_good_y(e.screenY));
             shown = true;
             shown_id = itemid;
@@ -58,7 +85,28 @@ var qv = function() {
         });
     }
 
-    attach_events_for_each_video();
-    reattach_events_on_feed_load();
-    attach_clear_events();
+    function reattach_events_on_feed_load() {
+        $('.feed-container').on('DOMNodeInserted DOMNodeRemoved', function() {
+            attach_events_for_each_video();
+        });
+    }
+
+    function attach_clear_events() {
+        $(document).click( function(e) {
+            // click to clear only works when click is not on qv node
+            console.log(e);
+            if (e.target.className.indexOf("qv") == -1) {
+                clear_all();
+            }
+        }).keypress(function() {
+            clear_all();
+        });
+    }
+
+    var init = function() {
+        attach_events_for_each_video();
+        reattach_events_on_feed_load();
+        attach_clear_events();
+    }();
+
 }();
