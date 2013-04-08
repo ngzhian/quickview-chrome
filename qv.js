@@ -8,14 +8,36 @@ var qv = function() {
      * @v_id: id of video
      */
     var make_qv = function(element, v_id) {
-        element.after('<div class="qv"></div>');
+        element.after('<div class="qv draggable"></div>');
         var qv = element.next('.qv');
 
-        // adds video iframe
-        qv.prepend(function() {
-            return '<iframe width="560" height="315"' + 
-            ' src="http://www.youtube.com/embed/' + v_id +
-            '?autoplay=1" frameborder="0" allowfullscreen=""></iframe>';
+        qv.append('<iframe width="560" height="315"' + 
+                  ' src="http://www.youtube.com/embed/' + v_id +
+        '?autoplay=1" frameborder="0" allowfullscreen=""></iframe>');
+
+        // adds title bar which allows dragging and configure options
+        qv.append('<div class="qv-bar">' +
+                  '<h2 class="qv-bar-title">Quickview</h2>' + 
+                  '<a class="qv-bar-expand">expand</a>' +
+                  '</div>');
+        $(".draggable").draggable({
+            handle: ".qv-bar",
+            containment:"document", 
+            cursor: "crosshair",
+            delay: 100,
+            scrollSensitivity: 100
+        });
+
+        $('a.qv-bar-expand').click(function(e) {
+            if ($(this).text() == 'expand') {
+                $('.qv').css('height', '510').css('width', '92%');
+                $('.qv iframe').attr('width', '854').attr('height', '510');
+                $(this).text('restore');
+            } else if ($(this).text() == 'restore') {
+                $('.qv').css('height', '315').css('width', '70%');
+                $('.qv iframe').attr('width', '560').attr('height', '315');
+                $(this).text('expand');
+            }
         });
 
         // show the video
@@ -23,36 +45,36 @@ var qv = function() {
 
         // adds comments async
         $.get(
-                'https://gdata.youtube.com/feeds/api/videos/'  + v_id + '/comments',
-                function(data) {
-                    var comments = '<div class="qv-comments">';
-                    $('entry', data).each(function() {
-                        comments += form_nice_comment($(this))
-                    });
-                    comments += '</div>';
-                    qv.append(comments);
+            'https://gdata.youtube.com/feeds/api/videos/'  + v_id + '/comments',
+            function(data) {
+                var comments = '<div class="qv-comments">';
+                $('entry', data).each(function() {
+                    comments += form_nice_comment($(this))
                 });
+                comments += '</div>';
+                qv.append(comments);
+            });
 
-        function form_nice_comment(entry) {
-            var author = entry.find('author').find('name').text();
-            var date = entry.find('published').text();
-            var content = entry.find('content').text();
+            function form_nice_comment(entry) {
+                var author = entry.find('author').find('name').text();
+                var date = entry.find('published').text();
+                var content = entry.find('content').text();
 
-            var comment = '<div class="qv-comment">' +
-                '<span class="qv-author">' + author + '</span>' +
-                '<span class="qv-date">' + form_nice_date(date) + '</span>' +
-                '<p class="qv-content">' + content + '</p>' +
-                '</div>';
-            return comment;
-        }
+                var comment = '<div class="qv-comment">' +
+                    '<span class="qv-author">' + author + '</span>' +
+                    '<span class="qv-date">' + form_nice_date(date) + '</span>' +
+                    '<p class="qv-content">' + content + '</p>' +
+                    '</div>';
+                return comment;
+            }
 
-        /* @date is in the format yyyy-mm-ddThh:mm:ss.000Z
-        */
-        function form_nice_date(date) {
-            return date.slice(5,10) + " " + date.slice(11,16);
-        }
+            /* @date is in the format yyyy-mm-ddThh:mm:ss.000Z
+            */
+            function form_nice_date(date) {
+                return date.slice(5,10) + " " + date.slice(11,16);
+            }
 
-        return qv;
+            return qv;
     }
 
     function get_good_y(mouse_y) {
@@ -77,9 +99,9 @@ var qv = function() {
                 if (shown == false || shown_id != itemid) {
                     clear_all();
                     make_qv($(this).parent(), itemid)
-                .css("top", get_good_y(e.screenY));
-            shown = true;
-            shown_id = itemid;
+                    .css("top", get_good_y(e.screenY));
+                    shown = true;
+                    shown_id = itemid;
                 }
             });
         });
@@ -94,7 +116,6 @@ var qv = function() {
     function attach_clear_events() {
         $(document).click( function(e) {
             // click to clear only works when click is not on qv node
-            console.log(e);
             if (e.target.className.indexOf("qv") == -1) {
                 clear_all();
             }

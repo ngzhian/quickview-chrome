@@ -35,7 +35,6 @@ and I made this because I like to watch YouTube videos and I don't like to click
 
 ##TODO
 - Paginate comments
-- Make div draggable
 - Animate the div, right now it pops up abruptly
 - Add links for author of comments
 

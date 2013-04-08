@@ -2,11 +2,27 @@
     display: none;
     position: fixed;
     z-index: 999;
-    left: 250px;
-    //background: blue;
+    left: 5%;
     width: 70%;
     height: 315px;
     border: 1px solid #F1F1F1;
+    box-shadow: -5px -5px #d3d3d3;
+}
+
+.qv-bar {
+    height: 8%;
+    background: #af2b26;
+    line-height: 2em;
+    color: #EEEEEE;
+}
+.qv-bar-title {
+    padding-left: 0.75em;
+    display: inline-block;
+}
+
+.qv-bar-expand {
+    float: right;
+    padding-right: 0.75em;
 }
 
 .qv iframe {
@@ -15,7 +31,7 @@
 
 .qv-comments {
     background: #F9F9F9;
-    height: 315px;
+    height: 92%;
     overflow: auto;
     font: Sans;
     font-size: 100%;
