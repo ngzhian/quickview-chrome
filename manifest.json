@@ -10,7 +10,7 @@
     {
         "matches": ["*://www.youtube.com/*"],
         "css": ["qv.css"],
-        "js": ["lib/jquery-1.9.1.min.js", "lib/jquery-ui-1.10.2.custom.js", "qv.js"]
+        "js": ["lib/jquery-1.9.1.min.js", "lib/hoverIntent.min.js", "lib/jquery-ui-1.10.2.custom.js", "qv.js"]
     }
     ]
 }

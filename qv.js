@@ -25,7 +25,6 @@ var qv = function() {
             containment:"document", 
             cursor: "crosshair",
             delay: 100,
-            scrollSensitivity: 100
         });
 
         $('a.qv-bar-expand').click(function(e) {
@@ -95,7 +94,7 @@ var qv = function() {
     function attach_events_for_each_video() {
         $('.feed-item-content-wrapper').each(function(index){
             var itemid = $(this).attr("data-context-item-id");
-            $(this).find('a.feed-video-title').mouseover(function(e) {
+            $(this).find('a.feed-video-title').hoverIntent(function(e) {
                 if (shown == false || shown_id != itemid) {
                     clear_all();
                     make_qv($(this).parent(), itemid)
