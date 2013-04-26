@@ -1,10 +1,10 @@
 .qv {
-    display: none;
     position: fixed;
+    left: 2%;
+    top: 2%;
     z-index: 999;
-    left: 5%;
-    width: 70%;
-    height: 315px;
+    width: 0px;
+    height: 0px;
     border: 1px solid #F1F1F1;
     box-shadow: -5px -5px #d3d3d3;
 }
@@ -13,14 +13,14 @@
     height: 8%;
     background: #af2b26;
     line-height: 2em;
-    color: #EEEEEE;
+    color: #EEEEEE
 }
 .qv-bar-title {
     padding-left: 0.75em;
     display: inline-block;
 }
 
-.qv-bar-expand {
+.qv-bar-toggle-size {
     float: right;
     padding-right: 0.75em;
 }
