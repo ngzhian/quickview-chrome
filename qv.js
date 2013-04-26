@@ -2,6 +2,8 @@ var qv = function() {
     var shown = false;
     var shown_id = null;
     var qv_div;
+    var qv_info_div;
+    var comments_div;
     var video_id;
     var base_node;
     var link_node;
@@ -40,7 +42,8 @@ var qv = function() {
         video_id = get_video_id(base_node);
         if (is_new_video_link(video_id)) {
             remove_current_qv();
-            show_qv_div(base_node, video_id);
+            set_attributes();
+            assemble_qv_div(base_node, video_id);
         }
     }
 
@@ -79,25 +82,19 @@ var qv = function() {
         expanded = true;
     }
 
-    function show_qv_div(base_node, video_id) {
-        if (should_make_new_qv_div()) {
-            set_attributes();
-            make_qv_div();
-            animate_qv_to_large();
-            append_large_iframe_video_to_qv();
-            append_qv_bar_to_qv();
-            append_comments_to_qv();
-        }
-    }
-
-    function should_make_new_qv_div () {
-        return (shown == false || shown_id != video_id);
-    }
-
     function set_attributes() {
         shown = true;
         shown_id = video_id;
         expanded = true;
+    }
+
+    function assemble_qv_div(base_node, video_id) {
+        make_qv_div();
+        animate_qv_to_large();
+        append_large_iframe_video_to_qv();
+        append_qv_bar_to_qv();
+        //append_qv_info_to_qv();
+        append_comments_to_qv();
     }
 
     function make_qv_div() {
@@ -134,20 +131,24 @@ var qv = function() {
     }
 
     function append_large_iframe_video_to_qv() {
-        iframe = '<iframe width="854" height="510"' + 
-                ' src="http://www.youtube.com/embed/' + video_id +
-                '?autoplay=1" frameborder="0" allowfullscreen=""></iframe>';
+        iframe = get_iframe_node_from_video_id(video_id); 
         qv_div.append(iframe);
         iframe = qv_div.find($('iframe'));
     }
 
-    function append_qv_bar_to_qv() {
-        var qv_bar = make_qv_bar();
-        make_qv_bar_draggable(qv_bar);
-        add_expand_behaviour_to_qv_bar(qv_bar);
+    function get_iframe_node_from_video_id(id) {
+        return '<iframe width="854" height="510"' + 
+            ' src="http://www.youtube.com/embed/' + video_id +
+            '?autoplay=1" frameborder="0" allowfullscreen=""></iframe>';
     }
 
-    function make_qv_bar() {
+    function append_qv_bar_to_qv() {
+        qv_bar_div = make_qv_bar_div();
+        make_qv_bar_draggable(qv_bar_div);
+        add_expand_behaviour_to_qv_bar(qv_bar_div);
+    }
+
+    function make_qv_bar_div() {
         qv_div.append('<div class="qv-bar">' +
                 '<h2 class="qv-bar-title">Quickview</h2>' + 
                 '<a class="qv-bar-toggle-size">expand</a>' +
@@ -189,36 +190,75 @@ var qv = function() {
         animate_qv_to_small();
     }
 
+    function append_qv_info_to_qv() {
+        qv_info_div = make_qv_info_div();
+        get_and_add_qv_info_from_api();
+    }
+
+    function make_qv_info_div() {
+        qv_info_div = '<div class="qv-info"></div>';
+        qv_div.append(qv_info_div);
+        return qv_div.find('.qv-info');
+    }
+
+    function get_and_add_qv_info_from_api() {
+        $.get(get_api_url_for_qv_info(video_id), add_qv_info);
+    }
+
+    function get_api_url_for_qv_info(video_id) {
+        //'https://www.googleapis.com/youtube/v3/videos
+        return 'https://gdata.youtube.com/feeds/api/videos/' +
+            video_id + '?v=2';
+    }
+
+    function add_qv_info(api_data) {
+        var entry = $('entry', api_data);
+        var description = entry.find('media\\:description').text();
+        console.log(description);
+    }
+
     function append_comments_to_qv() {
-        $.get(
-                'https://gdata.youtube.com/feeds/api/videos/'  + video_id + '/comments',
-                function(data) {
-                    var comments = '<div class="qv-comments">';
-                    $('entry', data).each(function() {
-                        comments += form_nice_comment($(this))
-                    });
-                    comments += '</div>';
-                    qv_div.append(comments);
-                });
+        comments_div = make_comments_div();
+        get_and_add_comments_from_api(video_id);
+    }
 
-        function form_nice_comment(entry) {
-            var author = entry.find('author').find('name').text();
-            var date = entry.find('published').text();
-            var content = entry.find('content').text();
+    function make_comments_div() {
+        comments_div = '<div class="qv-comments"></div>';
+        qv_div.append(comments_div);
+        return qv_div.find('.qv-comments');
+    }
 
-            var comment = '<div class="qv-comment">' +
-                '<span class="qv-author">' + author + '</span>' +
-                '<span class="qv-date">' + form_nice_date(date) + '</span>' +
-                '<p class="qv-content">' + content + '</p>' +
-                '</div>';
-            return comment;
-        }
+    function get_and_add_comments_from_api(video_id) {
+        $.get(get_api_url_for_comments(video_id), add_comments);
+    }
 
-        /* @date is in the format yyyy-mm-ddThh:mm:ss.000Z
-        */
-        function form_nice_date(date) {
-            return date.slice(5,10) + " " + date.slice(11,16);
-        }
+    function get_api_url_for_comments(video_id) {
+        return 'https://gdata.youtube.com/feeds/api/videos/' +
+            video_id + '/comments'
+    }
+
+    function add_comments(api_data) {
+        $('entry', api_data).each(function() {
+            comments_div.append(form_nice_comment($(this)));
+        });
+    }
+
+    function form_nice_comment(entry) {
+        var author = entry.find('author').find('name').text();
+        var date = entry.find('published').text();
+        var content = entry.find('content').text();
+
+        var comment = '<div class="qv-comment">' +
+            '<span class="qv-author">' + author + '</span>' +
+            '<span class="qv-date">' + form_nice_date(date) + '</span>' +
+            '<p class="qv-content">' + content + '</p>' +
+            '</div>';
+        return comment;
+    }
+
+    // date is in the format yyyy-mm-ddThh:mm:ss.000Z
+    function form_nice_date(date) {
+        return date.slice(5,10) + " " + date.slice(11,16);
     }
 
     function add_event_listener_to_clear_qv() {
