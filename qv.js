@@ -1,28 +1,39 @@
-// youtube embed iframe video size is 854 x 510 and 560 x 315
+// youtube embed iframe video size is 854 x 510 and 640 x 390
 var qv = function() {
-    var shown = false;
-    var shown_id = null;
-    var qv_div;
-    var qv_info_div;
-    var comments_div;
-    var video_id;
-    var link_node;
-    var video_links;
-    var iframe;
-    var expanded;
+    var html = '<div id="qv"><iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe><div id="qv-side"><div id="qv-bar"><h2 id="qv-title">Quickview</h2><a id="qv-size-toggle">exp</a></div><div id="qv-info"></div><div id="qv-comments"></div></div></div>';
+
+    // references to DOM elements
     var body = $('body');
+    var qv_node;
+    var iframe; // iframe node itself
+    var qv_side;
+    var qv_bar;
+    var qv_size_toggle;
+    var qv_info;
+    var qv_comments;
+
+    var video_id;
+    var shown_id = null;
+    var shown = false;
+    var is_big;
 
     function do_everything() {
-        qv_div = init_qv_div();
+        init_qv_node();
         video_links = get_all_video_links();
         add_event_listener_to_all_video_links(video_links);
         add_window_event_listeners();
         watch_for_new_page_load();
     }
 
-    function init_qv_div() {
-        body.append('<div id="qv"></div>');
-        return body.find('#qv');
+    function init_qv_node() {
+        body.append(html);
+        qv_node = body.find('#qv');
+        iframe = qv_node.find('iframe');
+        qv_side = qv_node.find('#qv-side');
+        qv_bar = qv_side.find('#qv-bar');
+        qv_size_toggle = qv_bar.find('#qv-size-toggle');
+        qv_info = qv_side.find('#qv-info');
+        qv_comments = qv_side.find('#qv-comments');
     }
 
     function get_all_video_links() {
@@ -40,127 +51,112 @@ var qv = function() {
         video_link.hoverIntent(function(e) {
             // need to pass a reference to object hovered over
             do_this_when_event_triggered($(this));
-        }, null);
+        }, function(e) {return;});
     }
 
     function do_this_when_event_triggered(video_link) {
         video_id = get_video_id_from(video_link);
-
-        if (got_valid_video_id(video_id) && is_new_video_link(video_id)) {
-            reset_qv();
-            set_attributes();
-            assemble_qv();
-        }
+        reset();
+        set_attributes();
+        assemble_qv();
     }
 
-    function got_valid_video_id(id) {
-        return video_id.length !== null && video_id.length > 1 ;
-    }
-
+    // example url: https://www.youtube.com/watch?v=MCaw6fv8ZxA 
+    // regex to use: [^\=]+$
     function get_video_id_from(video_link) {
-        // TODO this isn't foolproof, use regex instead
-        return video_link.attr('href').substring(9);
+        var url = video_link.attr('href');
+        return url.match(/[^\=]+$/g)[0];
     }
 
-    function is_new_video_link(video_id) {
-        return (shown == false || shown_id != video_id);
-    }
-
-    function reset_qv() {
-        qv_div.empty();
+    function reset() {
+        //if (qv_iframe) qv_iframe.empty();
+        reset_iframe();
         shown = false;
         shown_id = null;
-        iframe = null;
-        expanded = true;
-        qv_div.attr('class', '');
+        is_big = true;
+        qv_node.attr('class', '');
+    }
+
+    function reset_iframe() {
+        iframe.attr('width', '0px')
+            .attr('height', '0px')
+            .attr('src', '');
     }
 
     function set_attributes() {
         shown = true;
         shown_id = video_id;
-        expanded = true;
+        is_big = true;
     }
 
     function assemble_qv() {
-        qv_div.attr('class', 'large');
-        assemble_iframe();
-        assemble_qv_bar();
+        qv_node.attr('class', 'large');
+        init_iframe();
+        init_qv_bar();
+        init_qv_comments();
         //append_qv_info_to_qv();
-        assemble_qv_comments();
-    }
-
-    function assemble_iframe() {
-        iframe = init_iframe();
     }
 
     function init_iframe() {
-        iframe = form_iframe_tag(video_id); 
-        qv_div.append(iframe);
-        return qv_div.find($('iframe'));
+        iframe.attr('src', form_iframe_embed_url(video_id));
+        expand_iframe();
     }
 
-    function form_iframe_tag(video_id) {
-        return '<iframe id="qv-iframe" class="large" width="854" height="510"' + 
-            ' src="http://www.youtube.com/embed/' + video_id +
-            '?autoplay=1" frameborder="0" allowfullscreen=""></iframe>';
-    }
-
-    function assemble_qv_bar() {
-        qv_bar = init_qv_bar();
-        make_qv_bar_draggable();
-        add_expand_behaviour_to_qv_bar();
+    function form_iframe_embed_url(video_id) {
+        return 'http://www.youtube.com/embed/'+video_id+'?autoplay=1';
     }
 
     function init_qv_bar() {
-        qv_div.append('<div id="qv-bar">' +
-                '<h2 id="qv-bar-title">Quickview</h2>' + 
-                '<a id="qv-bar-toggle-size">expand</a>' +
-                '</div>');
-        return qv_div.find('.qv-bar');
+        set_size_toggle();
+        make_qv_bar_draggable();
     }
 
     function make_qv_bar_draggable() {
         $("#qv").draggable({
             handle: "#qv-bar",
-            containment:"document", 
-            cursor: "crosshair",
-            delay: 100,
+        containment:"document", 
+        cursor: "crosshair",
+        delay: 100,
         });
     }
 
-    function add_expand_behaviour_to_qv_bar(qv_bar) {
-        $('a#qv-bar-toggle-size').click(expand_or_contract);
+    function set_size_toggle() {
+        qv_size_toggle.click(expand_or_contract);
     }
 
     function expand_or_contract(click_event) {
-        if (expanded) {
+        if (is_big) {
             contract_iframe();
-            qv_div.attr('class', 'small');
-            expanded = false;
+            qv_node.attr('class', 'small');
+            $(this).attr('class', 'expand');
+            is_big = false;
         } else {
             expand_iframe();
-            qv_div.attr('class', 'large');
-            expanded = true;
+            qv_node.attr('class', 'large');
+            $(this).attr('class', 'contract');
+            is_big = true;
         }
     }
 
     function expand_iframe() {
-        iframe.animate({ width: "854px" }).animate({ height: "510px" });
+        iframe.attr('width', '854px')
+            .attr('height', '510px');
     }
 
     function contract_iframe() {
-        iframe.animate({ width: "510px" }).animate({ height: "315px" });
+        iframe.attr('width', '640px')
+            .attr('height', '390px');
     }
 
     function append_qv_info_to_qv() {
-        qv_info_div = make_qv_info_div();
+        qv_info = make_qv_info();
         get_and_add_qv_info_from_api();
     }
 
-    function make_qv_info_div() {
-        qv_info_div = '<div class="qv-info"></div>';
-        qv_div.append(qv_info_div);
-        return qv_div.find('.qv-info');
+    function make_qv_info() {
+        qv_info = '<div class="qv-info"></div>';
+        qv_node.append(qv_info);
+        return qv_node.find('.qv-info');
     }
 
     function get_and_add_qv_info_from_api() {
@@ -179,15 +175,8 @@ var qv = function() {
         console.log(description);
     }
 
-    function assemble_qv_comments() {
-        comments_div = init_comments_div();
+    function init_qv_comments() {
         get_and_add_comments_from_api(video_id);
-    }
-
-    function init_comments_div() {
-        comments_div = '<div id="qv-comments"></div>';
-        qv_div.append(comments_div);
-        return qv_div.find('#qv-comments');
     }
 
     function get_and_add_comments_from_api(video_id) {
@@ -201,7 +190,7 @@ var qv = function() {
 
     function add_comments(api_data) {
         $('entry', api_data).each(function() {
-            comments_div.append(form_nice_comment($(this)));
+            qv_comments.append(form_nice_comment($(this)));
         });
     }
 
@@ -225,12 +214,12 @@ var qv = function() {
 
     function add_window_event_listeners() {
         $(document).click(clears_qv_on_click)
-        $(document).keypress(clears_qv_on_keypress);
+            $(document).keypress(clears_qv_on_keypress);
     }
 
     function clears_qv_on_click(click_event) {
         if (click_is_not_in_qv(click_event)) {
-            reset_qv();
+            reset();
         }
     }
 
@@ -240,7 +229,7 @@ var qv = function() {
     }
 
     function clears_qv_on_keypress(keypress_event) {
-        reset_qv();
+        reset();
     }
 
     function watch_for_new_page_load() {
@@ -249,7 +238,7 @@ var qv = function() {
     }
 
     function do_this_when_new_page_loads() {
-        video_links = get_all_video_links();
+        var video_links = get_all_video_links();
         add_event_listener_to_all_video_links(video_links);
     }
 

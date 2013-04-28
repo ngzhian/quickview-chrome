@@ -8,68 +8,73 @@
     z-index: 999;
     width: 0px;
     height: 0px;
-    border: 1px solid #F1F1F1;
-    background: #DEDEEF;
+    //border: 1px solid #F1F1F1;
+    background: #EEEEEF;
+    //opacity: 0;
 }
 
 #qv.large {
-    width: 1200px;
+    //display: block;
+    //opacity: 100;
+    width: 1204px;
     height: 510px;
 }
 
 #qv.small {
-    width: 850px;
-    height: 315px;
+    //display: block;
+    //opacity: 100;
+    width: 990px;
+    height: 390px;
 }
 
 #qv-iframe {
     float: left;
 }
 
-/*
-iframe#qv-iframe.large {
-    width: 854;
-    height: 510px;
+#qv.large > #qv-side {
+    float: left;
+    width: 350px;
+    height: 500px;
 }
 
-iframe#qv-iframe.small {
-    width: 510;
-    height: 315px;
+#qv.small > #qv-side {
+    float: left;
+    width: 350px;
+    height: 390px;
 }
-*/
 
 #qv-bar {
-    height: 8%;
+    width: 100%;
+    height: 30px;
     background: #af2b26;
-    line-height: 2em;
+    line-height: 30px;
     color: #EEEEEE
 }
-#qv-bar-title {
+
+#qv-title {
     padding-left: 0.75em;
     display: inline-block;
 }
 
-#qv-bar-toggle-size {
+a#qv-size-toggle {
+    display: inline-block;
     float: right;
     padding-right: 0.75em;
 }
 
-#qv iframe {
-    float: left;
-}
-
 #qv-comments {
     background: #F9F9F9;
-    height: 92%;
+    //height: 100%;
     overflow: auto;
     font: Sans;
     font-size: 100%;
     line-height: 1.5em;
-    color: #999;
+    color: #BBB;
+    height: 100%;
 }
 
 .qv-comment {
-    padding: 10px;
+    padding: 1em;
 }
 
 #qv-content {
