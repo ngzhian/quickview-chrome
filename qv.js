@@ -19,8 +19,8 @@ var qv = function() {
 
     function do_everything() {
         init_qv_node();
-        video_links = get_all_video_links();
-        add_event_listener_to_all_video_links(video_links);
+        thumbnail_links = get_all_thumbnail_links();
+        add_event_listener_to_all_thumbnail_links(thumbnail_links);
         add_window_event_listeners();
         watch_for_new_page_load();
     }
@@ -36,13 +36,20 @@ var qv = function() {
         qv_comments = qv_side.find('#qv-comments');
     }
 
-    function get_all_video_links() {
+    function get_all_thumbnail_links() {
         // video links have href="/watch?v=[0-0a-zA-Z=]+"
-        return $('a[href*="watch?v="]');
+        var links = $('a[href*="watch?v="]');
+        var thumbnails;
+        return jQuery.grep(links, function(node, i){
+            // filters out nodes without a <img> has a child node
+            // i.e. non-thumbnail links
+            thumbnails = $(node).find('img');
+            return thumbnails.length != 0;
+        });
     }
 
-    function add_event_listener_to_all_video_links(video_links) {
-        video_links.each(function(index) {
+    function add_event_listener_to_all_thumbnail_links(links) {
+        jQuery.each(links, function(index) {
             add_event_listener_to_video_link($(this));
         });
     }
@@ -238,8 +245,8 @@ var qv = function() {
     }
 
     function do_this_when_new_page_loads() {
-        var video_links = get_all_video_links();
-        add_event_listener_to_all_video_links(video_links);
+        var thumbnail_links = get_all_thumbnail_links();
+        add_event_listener_to_all_thumbnail_links(thumbnail_links);
     }
 
     do_everything();

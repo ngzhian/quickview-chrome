@@ -8,9 +8,11 @@
     z-index: 999;
     width: 0px;
     height: 0px;
+    color: #595959;
     //border: 1px solid #F1F1F1;
-    background: #EEEEEF;
+    background: #F9F9F9;
     //opacity: 0;
+    overflow: hidden;
 }
 
 #qv.large {
@@ -63,30 +65,27 @@ a#qv-size-toggle {
 }
 
 #qv-comments {
-    background: #F9F9F9;
-    //height: 100%;
+    background: #FEFEFE;
     overflow: auto;
-    font: Sans;
-    font-size: 100%;
-    line-height: 1.5em;
-    color: #BBB;
     height: 100%;
 }
 
 .qv-comment {
-    padding: 1em;
+    margin: 0.75em 1em;
 }
 
-#qv-content {
-    color: #333;
+.qv-content {
     font-size: 1.125em;
 }
 
-#qv-author {
+.qv-author {
+    color: #9F9F9F;
     font-size: 0.75em;
-    margin-right: 1em;
+    //margin-right: 1em;
 }
 
-#qv-date {
+.qv-date {
+    color: #9F9F9F;
     font-size: 0.75em;
+    float: right;
 }
