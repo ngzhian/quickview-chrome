@@ -6,7 +6,7 @@ var qv = function() {
         '<div id="qv-side">' +
         '<div id="qv-bar">' +
         '<h2 id="qv-title"><a href="' + qv_url + '">Quickview</a></h2>' +
-        '<a id="qv-size-toggle" class="fontawesome-resize-small"></a>' +
+        '<a id="qv-size-toggle" class="contract"></a>' +
         '</div>' +
         '<div id="qv-info"></div>' +
         '<div id="qv-comments"></div>' +
@@ -52,10 +52,6 @@ var qv = function() {
         make_qv_bar_draggable();
     }
 
-    function set_size_toggle() {
-        qv_size_toggle.click(expand_or_contract);
-    }
-
     function make_qv_bar_draggable() {
         $("#qv").draggable({
             handle: "#qv-bar",
@@ -65,18 +61,20 @@ var qv = function() {
         });
     }
 
+    function set_size_toggle() {
+        qv_size_toggle.click(expand_or_contract);
+    }
+
     function expand_or_contract(click_event) {
         if (is_big) {
             contract_iframe();
             qv_node.attr('class', 'small');
             $(this).attr('class', 'expand');
-            qv_size_toggle.attr('class', 'fontawesome-resize-full');
             is_big = false;
         } else {
             expand_iframe();
             qv_node.attr('class', 'large');
             $(this).attr('class', 'contract');
-            qv_size_toggle.attr('class', 'fontawesome-resize-small');
             is_big = true;
         }
     }
@@ -119,7 +117,6 @@ var qv = function() {
     function do_this_when_event_triggered(video_link) {
         video_id = get_video_id_from(video_link);
         if (no_video_now(shown_id)) {
-            console.log('no vid now');
             set_attributes();
             assemble_qv();
         } else if (is_different_video(shown_id, video_id)) {
@@ -199,7 +196,7 @@ var qv = function() {
     function add_qv_info(api_data) {
         var entry = $('entry', api_data);
         var description = entry.find('media\\:description').text();
-        console.log(description);
+        //console.log(description);
     }
 
     function init_qv_comments() {
@@ -256,8 +253,9 @@ var qv = function() {
     }
 
     function click_is_not_in_qv(click_event) {
-        return click_event.target.className.indexOf('qv') == -1 &&
-            click_event.target.id.indexOf('qv') == -1;
+        return !jQuery.contains($('#qv')[0], click_event.target);
+        //return click_event.target.className.indexOf('qv') == -1 &&
+            //click_event.target.id.indexOf('qv') == -1;
     }
 
     function clears_qv_on_keypress(keypress_event) {
@@ -270,7 +268,6 @@ var qv = function() {
     }
 
     function reset_all() {
-        console.log("reset all");
         reset_iframe();
         reset_qv_comments();
         reset_qv_node();

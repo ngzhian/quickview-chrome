@@ -1,5 +1,3 @@
-@import url(http://weloveiconfonts.com/api/?family=fontawesome);
-
 #qv {
     -webkit-transition: width 0.5s 0.0s, height 0.5s 0.5s;
     -moz-transition: width 0.5s 0.0s, height 0.5s 0.5s;
@@ -70,14 +68,18 @@
     display: inline-block;
 }
 
-[class*="fontawesome-"]:before {
-  font-family: 'FontAwesome', sans-serif;
-}
-
 #qv-size-toggle {
     display: inline-block;
     float: right;
     padding-right: 0.75em;
+}
+
+#qv-size-toggle.contract:before {
+    content:"m";
+}
+
+#qv-size-toggle.expand:before {
+    content:"M";
 }
 
 #qv-comments {
@@ -97,7 +99,6 @@
 .qv-author {
     color: #9F9F9F;
     font-size: 0.75em;
-    //margin-right: 1em;
 }
 
 .qv-date {
