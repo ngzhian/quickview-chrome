@@ -22,7 +22,9 @@ A page where you can scroll forever AND watch videos.
 This is a Chrome/Chromium extension, uses jQuery to do some simple attribute extraction,
 DOM manipulation, mouse events. Uses iframe to embed video.
 
-To use this, `git clone https://github.com/ngzhian/quickview.git`,
+You can now get this at the [Chrome Web Store](https://chrome.google.com/webstore/detail/quickview-for-youtube/dadcnockbecggaefjepcmhikaejknmlg)!
+
+Alternatively, `git clone https://github.com/ngzhian/quickview.git`,
 then go to `chrome://extensions` and turn on Developer mode.
 Finally just click the "Load unpacked extension..." button and browse
 to where you cloned the repository. Hopefully everything works fine!
