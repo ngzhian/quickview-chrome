@@ -90,6 +90,10 @@ var qv = function() {
             .attr('src', '');
     }
 
+    function reset_qv_comments() {
+        qv_comments.empty();
+    }
+
     function set_attributes() {
         shown = true;
         shown_id = video_id;
@@ -226,7 +230,7 @@ var qv = function() {
 
     function clears_qv_on_click(click_event) {
         if (click_is_not_in_qv(click_event)) {
-            reset();
+            reset_all();
         }
     }
 
@@ -236,7 +240,7 @@ var qv = function() {
     }
 
     function clears_qv_on_keypress(keypress_event) {
-        reset();
+        reset_all();
     }
 
     function watch_for_new_page_load() {
