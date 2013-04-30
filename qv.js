@@ -52,15 +52,6 @@ var qv = function() {
         make_qv_bar_draggable();
     }
 
-    function make_qv_bar_draggable() {
-        $("#qv").draggable({
-            handle: "#qv-bar",
-        containment:"document", 
-        cursor: "crosshair",
-        delay: 100,
-        });
-    }
-
     function set_size_toggle() {
         qv_size_toggle.click(expand_or_contract);
     }
@@ -68,15 +59,23 @@ var qv = function() {
     function expand_or_contract(click_event) {
         if (is_big) {
             contract_iframe();
-            qv_node.attr('class', 'small');
+            setTimeout(contract_qv_side, 400);
             $(this).attr('class', 'expand');
             is_big = false;
         } else {
-            expand_iframe();
-            qv_node.attr('class', 'large');
+            expand_qv_side();
+            setTimeout(expand_iframe, 800);
             $(this).attr('class', 'contract');
             is_big = true;
         }
+    }
+
+    function expand_qv_side() {
+        qv_side.attr('class', 'large');
+    }
+
+    function contract_qv_side() {
+        qv_side.attr('class', 'small');
     }
 
     function expand_iframe() {
@@ -87,6 +86,15 @@ var qv = function() {
     function contract_iframe() {
         iframe.attr('width', '640px')
             .attr('height', '390px');
+    }
+
+    function make_qv_bar_draggable() {
+        $("#qv").draggable({
+            handle: "#qv-bar",
+        containment:"document", 
+        cursor: "crosshair",
+        delay: 100,
+        });
     }
 
     function get_all_thumbnail_links() {
@@ -162,7 +170,7 @@ var qv = function() {
 
     function assemble_qv() {
         qv_node.attr('class', 'large');
-        setTimeout(init_iframe, 1000, video_id);
+        setTimeout(init_iframe, 800, video_id);
         init_qv_comments();
         //append_qv_info_to_qv();
     }
