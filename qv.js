@@ -116,9 +116,9 @@ var qv = function() {
     }
 
     function add_event_listener_to_video_link(video_link) {
-        video_link.hoverIntent(function(e) {
+        video_link.find('img').hoverIntent(function(e) {
             // need to pass a reference to object hovered over
-            do_this_when_event_triggered($(this));
+            do_this_when_event_triggered(video_link);
         }, function(e) {return;});
     }
 
@@ -276,11 +276,10 @@ var qv = function() {
     }
 
     function reset_all() {
+        reset_attributes();
         reset_iframe();
         reset_qv_comments();
-        reset_qv_node();
-        //setTimeout(reset_qv_node, 200);
-        reset_attributes();
+        setTimeout(reset_qv_node, 400);
     }
 
     function reset_iframe() {
