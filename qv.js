@@ -63,9 +63,11 @@ var qv = function() {
 
     function do_this_when_event_triggered(video_link) {
         video_id = get_video_id_from(video_link);
-        reset();
-        set_attributes();
-        assemble_qv();
+        if (is_different_video(shown_id, video_id)) {
+            reset_all();
+            set_attributes();
+            assemble_qv();
+        }
     }
 
     // example url: https://www.youtube.com/watch?v=MCaw6fv8ZxA 
@@ -75,9 +77,13 @@ var qv = function() {
         return url.match(/[^\=]+$/g)[0];
     }
 
-    function reset() {
-        //if (qv_iframe) qv_iframe.empty();
+    function is_different_video(current_id, new_id) {
+        return current_id == null || current_id != new_id;
+    }
+
+    function reset_all() {
         reset_iframe();
+        reset_qv_comments();
         shown = false;
         shown_id = null;
         is_big = true;
