@@ -1,3 +1,5 @@
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+
 #qv {
     -webkit-transition: width 0.5s 0.0s, height 0.5s 0.5s;
     -moz-transition: width 0.5s 0.0s, height 0.5s 0.5s;
@@ -58,10 +60,16 @@
     display: inline-block;
 }
 
+[class*="fontawesome-"]:before {
+  font-family: 'FontAwesome', sans-serif;
+}
+
 a#qv-size-toggle {
     display: inline-block;
     float: right;
     padding-right: 0.75em;
+    text-decoration: none;
+    color: inherit;
 }
 
 #qv-comments {

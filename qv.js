@@ -1,6 +1,6 @@
 // youtube embed iframe video size is 854 x 510 and 640 x 390
 var qv = function() {
-    var html = '<div id="qv"><iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe><div id="qv-side"><div id="qv-bar"><h2 id="qv-title">Quickview</h2><a id="qv-size-toggle">exp</a></div><div id="qv-info"></div><div id="qv-comments"></div></div></div>';
+    var html = '<div id="qv"><iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe><div id="qv-side"><div id="qv-bar"><h2 id="qv-title">Quickview</h2><a id="qv-size-toggle" class="fontawesome-resize-small"></a></div><div id="qv-info"></div><div id="qv-comments"></div></div></div>';
 
     // references to DOM elements
     var body = $('body');
@@ -128,6 +128,10 @@ var qv = function() {
         make_qv_bar_draggable();
     }
 
+    function set_size_toggle() {
+        qv_size_toggle.click(expand_or_contract);
+    }
+
     function make_qv_bar_draggable() {
         $("#qv").draggable({
             handle: "#qv-bar",
@@ -137,20 +141,18 @@ var qv = function() {
         });
     }
 
-    function set_size_toggle() {
-        qv_size_toggle.click(expand_or_contract);
-    }
-
     function expand_or_contract(click_event) {
         if (is_big) {
             contract_iframe();
             qv_node.attr('class', 'small');
             $(this).attr('class', 'expand');
+            qv_size_toggle.attr('class', 'fontawesome-resize-full');
             is_big = false;
         } else {
             expand_iframe();
             qv_node.attr('class', 'large');
             $(this).attr('class', 'contract');
+            qv_size_toggle.attr('class', 'fontawesome-resize-small');
             is_big = true;
         }
     }
