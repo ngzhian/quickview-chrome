@@ -11,22 +11,16 @@
     width: 0px;
     height: 0px;
     color: #595959;
-    //border: 1px solid #F1F1F1;
     background: #F9F9F9;
-    //opacity: 0;
     overflow: hidden;
 }
 
 #qv.large {
-    //display: block;
-    //opacity: 100;
     width: 1204px;
     height: 510px;
 }
 
 #qv.small {
-    //display: block;
-    //opacity: 100;
     width: 990px;
     height: 390px;
 }
@@ -35,14 +29,20 @@
     float: left;
 }
 
+#qv-side {
+    -webkit-transition: width 0.5s 0.0s, height 0.5s 0.5s;
+    -moz-transition: width 0.5s 0.0s, height 0.5s 0.5s;
+    transition: width 0.5s 0.0s, height 0.5s 0.5s;
+}
+
 #qv.large > #qv-side {
-    float: left;
+    float: right;
     width: 350px;
     height: 500px;
 }
 
 #qv.small > #qv-side {
-    float: left;
+    float: right;
     width: 350px;
     height: 390px;
 }
