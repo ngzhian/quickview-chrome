@@ -170,6 +170,7 @@ var qv = function() {
 
     function assemble_qv() {
         qv_node.attr('class', 'large');
+        expand_qv_side();
         setTimeout(init_iframe, 800, video_id);
         init_qv_comments();
         //append_qv_info_to_qv();

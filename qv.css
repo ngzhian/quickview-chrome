@@ -85,7 +85,6 @@
     transition: height 0.4s 0.0s;
     background: #FEFEFE;
     overflow: auto;
-    height: 100%;
 }
 
 #qv-side.large #qv-comments {
