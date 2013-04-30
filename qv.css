@@ -55,6 +55,16 @@
     color: #EEEEEE
 }
 
+#qv-bar a {
+    text-decoration: none;
+    color: inherit;
+}
+
+#qv-bar a:hover {
+    font-weight: bold;
+    color: #FEFEFE;
+}
+
 #qv-title {
     padding-left: 0.75em;
     display: inline-block;
@@ -64,12 +74,10 @@
   font-family: 'FontAwesome', sans-serif;
 }
 
-a#qv-size-toggle {
+#qv-size-toggle {
     display: inline-block;
     float: right;
     padding-right: 0.75em;
-    text-decoration: none;
-    color: inherit;
 }
 
 #qv-comments {

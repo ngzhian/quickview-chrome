@@ -1,6 +1,16 @@
 // youtube embed iframe video size is 854 x 510 and 640 x 390
 var qv = function() {
-    var html = '<div id="qv"><iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe><div id="qv-side"><div id="qv-bar"><h2 id="qv-title">Quickview</h2><a id="qv-size-toggle" class="fontawesome-resize-small"></a></div><div id="qv-info"></div><div id="qv-comments"></div></div></div>';
+    var qv_url = '#';
+    var html = '<div id="qv">' +
+        '<iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe>' +
+        '<div id="qv-side">' +
+        '<div id="qv-bar">' +
+        '<h2 id="qv-title"><a href="' + qv_url + '">Quickview</a></h2>' +
+        '<a id="qv-size-toggle" class="fontawesome-resize-small"></a>' +
+        '</div>' +
+        '<div id="qv-info"></div>' +
+        '<div id="qv-comments"></div>' +
+        '</div></div>';
 
     // references to DOM elements
     var body = $('body');
