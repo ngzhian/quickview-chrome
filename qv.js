@@ -147,7 +147,7 @@ var qv = function() {
     function get_video_id_from(video_link) {
         var url = video_link.attr('href');
         //console.log(url.match(/v(\=|\/)(\w*)/)[0].substring(2));
-        return url.match(/v(\=|\/)([^\=]+)/)[0].substring(2);
+        return url.match(/v(\=|\/)([^=&\/]+)/)[0].substring(2);
     }
 
     function update_sizes() {
