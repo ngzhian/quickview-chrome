@@ -12,31 +12,32 @@ var qv = function() {
         '<div id="qv-comments"></div>' +
         '</div></div>';
 
+    var body = $('body'), 
     // references to DOM elements
-    var body = $('body');
-    var qv_node;
-    var iframe; // iframe node itself
-    var qv_side;
-    var qv_bar;
-    var qv_size_toggle;
-    var qv_info;
-    var qv_comments;
+        qv_node,
+        iframe, // iframe node itself
+        qv_side,
+        qv_bar,
+        qv_size_toggle,
+        qv_info,
+        qv_comments,
+    // attributes needed for functions
+        video_id,
+        shown_id = null,
+        is_big;
 
-    var video_id;
-    var shown_id = null;
-    var shown = false;
-    var is_big;
-
-    function do_everything() {
-        init_qv_node();
-        init_qv_bar();
-        thumbnail_links = get_all_thumbnail_links();
-        add_event_listener_to_all_thumbnail_links(thumbnail_links);
+    function initialize() {
+        init_dom();
+        set_qv_bar_behavior();
         add_window_event_listeners();
-        watch_for_new_page_load();
     }
 
-    function init_qv_node() {
+    function get_to_work() {
+        links = get_all_thumbnail_links();
+        add_event_listener_to_all_thumbnail_links(links);
+    }
+
+    function init_dom() {
         body.append(html);
         qv_node = body.find('#qv');
         iframe = qv_node.find('iframe');
@@ -47,7 +48,7 @@ var qv = function() {
         qv_comments = qv_side.find('#qv-comments');
     }
 
-    function init_qv_bar() {
+    function set_qv_bar_behavior() {
         set_size_toggle();
         make_qv_bar_draggable();
     }
@@ -58,16 +59,23 @@ var qv = function() {
 
     function expand_or_contract(click_event) {
         if (is_big) {
-            contract_iframe();
-            setTimeout(contract_qv_side, 400);
-            $(this).attr('class', 'expand');
-            is_big = false;
+            contract();
         } else {
-            expand_qv_side();
-            setTimeout(expand_iframe, 800);
-            $(this).attr('class', 'contract');
-            is_big = true;
+            expand();
         }
+        is_big = !is_big;
+    }
+
+    function contract() {
+        contract_iframe();
+        setTimeout(contract_qv_side, 400);
+        qv_size_toggle.attr('class', 'expand');
+    }
+
+    function expand() {
+        expand_qv_side();
+        setTimeout(expand_iframe, 800);
+        qv_size_toggle.attr('class', 'contract');
     }
 
     function expand_qv_side() {
@@ -78,23 +86,23 @@ var qv = function() {
         qv_side.attr('class', 'small');
     }
 
+    function resize_using_class(jquery_object, size) {
+        jquery_object.attr('class', size);
+    }
+
     function expand_iframe() {
-        iframe.attr('width', '854px')
-            .attr('height', '510px');
+        set_iframe_size(854, 510);
     }
 
     function contract_iframe() {
-        iframe.attr('width', '640px')
-            .attr('height', '390px');
+        set_iframe_size(640, 390);
     }
 
     function make_qv_bar_draggable() {
-        $("#qv").draggable({
+        qv_node.draggable( {
             handle: "#qv-bar",
-        containment:"document", 
-        cursor: "crosshair",
-        delay: 100,
-        });
+        containment: "document"
+        } );
     }
 
     function get_all_thumbnail_links() {
@@ -111,74 +119,64 @@ var qv = function() {
 
     function add_event_listener_to_all_thumbnail_links(links) {
         jQuery.each(links, function(index) {
-            add_event_listener_to_video_link($(this));
+            add_event_listener_to_thumbnail_link($(this));
         });
     }
 
-    function add_event_listener_to_video_link(video_link) {
-        video_link.find('img').hoverIntent(function(e) {
-            // need to pass a reference to object hovered over
-            do_this_when_event_triggered(video_link);
+    function add_event_listener_to_thumbnail_link(link) {
+        link.find('img').hoverIntent(function(e) {
+            show_qv(link);
         }, function(e) {return;});
+        // the second function does nothing, because hoverIntent
+        // triggers the the given function twice if only 1 is given
     }
 
-    function do_this_when_event_triggered(video_link) {
+    // Takes a <a> tag with href to a YouTube url and pops up qv
+    function show_qv(video_link) {
         video_id = get_video_id_from(video_link);
-        if (no_video_now(shown_id)) {
-            set_attributes();
-            assemble_qv();
-        } else if (is_different_video(shown_id, video_id)) {
-            init_qv_comments();
-            update_shown_id(video_id);
-            update_iframe_src(video_id);
-        }
+
+        update_sizes();
+        update_iframe(video_id);
+        update_qv_comments(video_id);
+        update_attributes(video_id);
     }
 
     // example url: https://www.youtube.com/watch?v=MCaw6fv8ZxA 
-    // regex to use: [^\=]+$
+    // regex to use: v(\=|\/)(\w*)
+    // the result will be 'v=MCaw6fv8ZxA'
     function get_video_id_from(video_link) {
         var url = video_link.attr('href');
-        return url.match(/[^\=]+$/g)[0];
+        //console.log(url.match(/v(\=|\/)(\w*)/)[0].substring(2));
+        return url.match(/v(\=|\/)([^\=]+)/)[0].substring(2);
     }
 
-    function no_video_now(current_id) {
-        return current_id === null;
+    function update_sizes() {
+        if (shown_id === null) {
+            resize_using_class(qv_node, 'large');
+        }
     }
 
-    function set_attributes() {
+    function update_attributes(id) {
         shown = true;
-        update_shown_id(video_id);
+        shown_id = id;
         is_big = true;
     }
 
-    function is_different_video(current_id, new_id) {
-        return current_id != new_id;
+    function update_iframe(id) {
+        if (shown_id === null) {
+            setTimeout(expand_iframe, 800);
+        }
+        if (shown_id != id) {
+            update_iframe_src(make_embed_url_from_video_id(id));
+        }
     }
 
-    function update_shown_id(video_id) {
-        shown_id = video_id;
-    }
-
-    function update_iframe_src(video_id) {
-        var url = form_embed_url_from_video_id(video_id);
+    function update_iframe_src(url) {
         iframe.attr('src', url);
     }
 
-    function form_embed_url_from_video_id(id) {
+    function make_embed_url_from_video_id(id) {
         return 'http://www.youtube.com/embed/'+video_id+'?autoplay=1';
-    }
-
-    function assemble_qv() {
-        qv_node.attr('class', 'large');
-        expand_qv_side();
-        setTimeout(init_iframe, 800, video_id);
-        init_qv_comments();
-        //append_qv_info_to_qv();
-    }
-
-    function init_iframe(id) {
-        expand_iframe();
-        update_iframe_src(id);
     }
 
     function append_qv_info_to_qv() {
@@ -208,9 +206,11 @@ var qv = function() {
         //console.log(description);
     }
 
-    function init_qv_comments() {
-        reset_qv_comments();
-        get_and_add_comments_from_api(video_id);
+    function update_qv_comments(id) {
+        if (id != shown_id) {
+            reset_qv_comments();
+            get_and_add_comments_from_api(id);
+        }
     }
 
     function reset_qv_comments() {
@@ -252,7 +252,7 @@ var qv = function() {
 
     function add_window_event_listeners() {
         $(document).click(clears_qv_on_click)
-            $(document).keypress(clears_qv_on_keypress);
+            .keypress(clears_qv_on_keypress);
     }
 
     function clears_qv_on_click(click_event) {
@@ -263,34 +263,33 @@ var qv = function() {
 
     function click_is_not_in_qv(click_event) {
         return !jQuery.contains($('#qv')[0], click_event.target);
-        //return click_event.target.className.indexOf('qv') == -1 &&
-            //click_event.target.id.indexOf('qv') == -1;
     }
 
     function clears_qv_on_keypress(keypress_event) {
         reset_all();
     }
 
-    function watch_for_new_page_load() {
-        $('.feed-container').on('DOMNodeInserted DOMNodeRemoved',
-                do_this_when_new_page_loads);
-    }
-
     function reset_all() {
-        reset_attributes();
         reset_iframe();
         reset_qv_comments();
         setTimeout(reset_qv_node, 400);
+        reset_attributes();
+        expand_qv_side();
     }
 
     function reset_iframe() {
-        iframe.attr('width', '0px')
-            .attr('height', '0px')
-            .attr('src', '');
+        set_iframe_size(0, 0);
+        update_iframe_src('');
+    }
+
+    function set_iframe_size(width, height) {
+        iframe.attr('width', width + 'px')
+            .attr('height', height + 'px');
     }
 
     function reset_qv_node() {
         qv_node.attr('class', '');
+        qv_node.attr('style', '');
     }
 
     function reset_attributes() {
@@ -299,12 +298,13 @@ var qv = function() {
         is_big = true;
     }
 
-
-    function do_this_when_new_page_loads() {
-        var thumbnail_links = get_all_thumbnail_links();
-        add_event_listener_to_all_thumbnail_links(thumbnail_links);
+    function watch_for_new_page_load() {
+        $('.feed-container').on('DOMNodeInserted DOMNodeRemoved',
+                get_to_work);
     }
 
-    do_everything();
+    initialize();
+    get_to_work();
+    watch_for_new_page_load();
 
 }();
