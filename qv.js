@@ -1,5 +1,5 @@
 // youtube embed iframe video size is 854 x 510 and 640 x 390
-var qv = function() {
+var quickview = function() {
     var qv_url = '#';
     var html = '<div id="qv">' +
         '<iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe>' +
@@ -14,7 +14,7 @@ var qv = function() {
 
     var body = $('body'), 
     // references to DOM elements
-        qv_node,
+        qv,
         iframe, // iframe node itself
         qv_side,
         qv_bar,
@@ -39,9 +39,9 @@ var qv = function() {
 
     function init_dom() {
         body.append(html);
-        qv_node = body.find('#qv');
-        iframe = qv_node.find('iframe');
-        qv_side = qv_node.find('#qv-side');
+        qv = body.find('#qv');
+        iframe = qv.find('iframe');
+        qv_side = qv.find('#qv-side');
         qv_bar = qv_side.find('#qv-bar');
         qv_size_toggle = qv_bar.find('#qv-size-toggle');
         qv_info = qv_side.find('#qv-info');
@@ -68,22 +68,22 @@ var qv = function() {
 
     function contract() {
         contract_iframe();
-        setTimeout(contract_qv_side, 400);
+        setTimeout(contract_qv, 400);
         qv_size_toggle.attr('class', 'expand');
     }
 
     function expand() {
-        expand_qv_side();
+        expand_qv();
         setTimeout(expand_iframe, 800);
         qv_size_toggle.attr('class', 'contract');
     }
 
-    function expand_qv_side() {
-        qv_side.attr('class', 'large');
+    function expand_qv() {
+        qv.attr('class', 'large');
     }
 
-    function contract_qv_side() {
-        qv_side.attr('class', 'small');
+    function contract_qv() {
+        qv.attr('class', 'small');
     }
 
     function resize_using_class(jquery_object, size) {
@@ -99,7 +99,7 @@ var qv = function() {
     }
 
     function make_qv_bar_draggable() {
-        qv_node.draggable( {
+        qv.draggable( {
             handle: "#qv-bar",
         containment: "document"
         } );
@@ -137,6 +137,7 @@ var qv = function() {
 
         update_sizes();
         update_iframe(video_id);
+        update_qv_info(video_id);
         update_qv_comments(video_id);
         update_attributes(video_id);
     }
@@ -152,7 +153,7 @@ var qv = function() {
 
     function update_sizes() {
         if (shown_id === null) {
-            resize_using_class(qv_node, 'large');
+            resize_using_class(qv, 'large');
         }
     }
 
@@ -179,31 +180,30 @@ var qv = function() {
         return 'http://www.youtube.com/embed/'+video_id+'?autoplay=1';
     }
 
-    function append_qv_info_to_qv() {
-        qv_info = make_qv_info();
-        get_and_add_qv_info_from_api();
+    function update_qv_info(id) {
+        if (id != shown_id) {
+            reset_qv_info();
+            get_and_add_info_from_api(id);
+        }
     }
 
-    function make_qv_info() {
-        qv_info = '<div class="qv-info"></div>';
-        qv_node.append(qv_info);
-        return qv_node.find('.qv-info');
+    function reset_qv_info() {
+        qv_info.empty();
     }
 
-    function get_and_add_qv_info_from_api() {
-        $.get(get_api_url_for_qv_info(video_id), add_qv_info);
+    function get_and_add_info_from_api(id) {
+        $.get(get_api_url_for_info(video_id), add_info);
     }
 
-    function get_api_url_for_qv_info(video_id) {
+    function get_api_url_for_info(video_id) {
         //'https://www.googleapis.com/youtube/v3/videos
         return 'https://gdata.youtube.com/feeds/api/videos/' +
             video_id + '?v=2';
     }
 
-    function add_qv_info(api_data) {
-        var entry = $('entry', api_data);
-        var description = entry.find('media\\:description').text();
-        //console.log(description);
+    function add_info(api_data) {
+        var a = find_xml_node(api_data, 'media:description');
+        qv_info.append(a.textContent);
     }
 
     function update_qv_comments(id) {
@@ -272,9 +272,8 @@ var qv = function() {
     function reset_all() {
         reset_iframe();
         reset_qv_comments();
-        setTimeout(reset_qv_node, 400);
+        reset_qv();
         reset_attributes();
-        expand_qv_side();
     }
 
     function reset_iframe() {
@@ -287,9 +286,9 @@ var qv = function() {
             .attr('height', height + 'px');
     }
 
-    function reset_qv_node() {
-        qv_node.attr('class', '');
-        qv_node.attr('style', '');
+    function reset_qv() {
+        qv.attr('class', '');
+        qv.attr('style', '');
     }
 
     function reset_attributes() {
@@ -301,6 +300,23 @@ var qv = function() {
     function watch_for_new_page_load() {
         $('.feed-container').on('DOMNodeInserted DOMNodeRemoved',
                 get_to_work);
+    }
+
+    function find_xml_node(xml, name) {
+        if (xml.nodeName == name) {
+            return xml;
+        } else if (xml.childNodes.length == 0) { 
+            return null;
+        } else {
+            var outer_v = null;
+            jQuery.each(xml.childNodes, function (i, value) {
+                var node = find_xml_node(value, name);
+                if (node != null) {
+                    outer_v = node;
+                }
+            });
+            return outer_v;
+        }
     }
 
     initialize();

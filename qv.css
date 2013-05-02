@@ -12,6 +12,11 @@
     overflow: hidden;
 }
 
+#qv.small {
+    width: 990px;
+    height: 390px;
+}
+
 #qv.large {
     width: 1204px;
     height: 510px;
@@ -29,15 +34,14 @@
     transition: height 0.4s 0.0s, left 0.4s 0.4s;
     z-index: 9999;
     width: 350px;
+    background: #FEFEFE;
 }
 
-#qv-side.large {
-    left: 0px;
+#qv.large #qv-side {
     height: 510px;
 }
 
-#qv-side.small {
-    left: -214px;
+#qv.small #qv-side {
     height: 390px;
 }
 
@@ -78,19 +82,27 @@
     content:"M";
 }
 
+#qv-info {
+    height: 100px;
+    overflow: auto;
+    word-break: break-word;
+    padding-top: 0.3em;
+    padding-left: 1.0em;
+    line-height: 1.5em;
+}
+
 #qv-comments {
     -webkit-transition: height 0.4s 0.0s;
     -moz-transition: height 0.4s 0.0s;
     transition: height 0.4s 0.0s;
-    background: #FEFEFE;
     overflow: auto;
 }
 
-#qv-side.large #qv-comments {
+#qv.large #qv-comments {
     height: 480px;
 }
 
-#qv-side.small #qv-comments {
+#qv.small #qv-comments {
     height: 360px;
 }
 
