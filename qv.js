@@ -9,7 +9,7 @@ var quickview = function() {
         '<a id="qv-size-toggle" class="contract"></a>' +
         '</div>' +
         '<div id="qv-info"></div>' +
-        '<div id="qv-comments"></div>' +
+        '<div id="qv-comments" class="expander"></div>' +
         '</div></div>';
 
     var body = $('body'), 
@@ -297,6 +297,16 @@ var quickview = function() {
         is_big = true;
     }
 
+    function watch_for_new_thumbnails() {
+        watch_for_new_page_load();
+        watch_for_load_more_at_channel_page();
+    }
+
+    function watch_for_new_page_load() {
+        $('.feed-list-container').on('DOMNodeInserted DOMNodeRemoved',
+                get_to_work);
+    }
+
     function watch_for_new_page_load() {
         $('.feed-container').on('DOMNodeInserted DOMNodeRemoved',
                 get_to_work);
@@ -322,5 +332,4 @@ var quickview = function() {
     initialize();
     get_to_work();
     watch_for_new_page_load();
-
 }();
