@@ -9,8 +9,8 @@
     width: 0px;
     height: 30px;
     color: #595959;
+    font-family: Sans;
     overflow: hidden;
-    font-family: sans;
 }
 
 #qv.small {
@@ -30,12 +30,13 @@
 #qv-side {
     position: relative;
     float: right;
+    z-index: 9999;
+    width: 350px;
+    overflow: auto;
+    background: #FEFEFE;
     -webkit-transition: height 0.4s 0.0s, left 0.4s 0.4s;
     -moz-transition: height 0.4s 0.0s, left 0.4s 0.4s;
     transition: height 0.4s 0.0s, left 0.4s 0.4s;
-    z-index: 9999;
-    width: 350px;
-    background: #FEFEFE;
 }
 
 #qv.large #qv-side {
@@ -48,20 +49,19 @@
 
 #qv-bar {
     width: 100%;
-    height: 7%;
+    height: 30px;
     background: #af2b26;
     line-height: 30px;
     color: #EEEEEE
 }
 
-#qv-bar a {
-    text-decoration: none;
-    color: inherit;
+#qv-side a {
+    color: rgb(248, 242, 242);
 }
 
-#qv-bar a:hover {
+#qv-side a:hover {
     font-weight: bold;
-    color: #FEFEFE;
+    text-decoration: none;
 }
 
 #qv-title {
@@ -84,15 +84,15 @@
 }
 
 .hide-toggle {
-    height: 4%;
+    height: 20px;
+    line-height: 20px;
     background: rgb(136, 45, 49);
     display: block;
     padding-top: 0.3em;
     padding-left: 0.75em;
-    color: rgb(248, 242, 242);
 }
 
-.hide-toggle.shown:before {
+.hide-toggle:before {
     content:"Hide " attr(data-for);
 }
 
@@ -100,35 +100,18 @@
     content:"Show " attr(data-for);
 }
 
-.hide-toggle:hover {
-    font-weight: bold;
-    text-decoration: none;
-}
-
 #qv-info {
-    height: 20%;
-    overflow: auto;
     word-break: break-word;
     padding-top: 0.3em;
     padding-left: 0.75em;
     line-height: 1.5em;
 }
 
-#qv-info.large {
-    height: 82%;
-}
-
 #qv-comments {
     -webkit-transition: height 0.4s 0.0s;
     -moz-transition: height 0.4s 0.0s;
     transition: height 0.4s 0.0s;
-    overflow: auto;
-    height: 62%;
     word-break: break-word;
-}
-
-#qv-comments.large {
-    height: 82%;
 }
 
 .qv-comment {
@@ -147,4 +130,25 @@
     color: #9F9F9F;
     font-size: 0.75em;
     float: right;
+}
+
+#qv-side a.truncate {
+    margin-left: 1em;
+    color: rgb(153, 29, 29);
+}
+
+#qv-side a.truncate.hidden:before {
+    content: "...show more...";
+}
+
+#qv-side a.truncate:before {
+    content: "...show less...";
+}
+
+#qv-side span.details.hidden {
+    display: none;
+}
+
+#qv-side span.details {
+    display: inline;
 }

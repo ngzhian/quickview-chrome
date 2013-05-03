@@ -10,7 +10,7 @@ var quickview = function() {
         '</div>' +
         '<a id="qv-info-toggle" data-for="video info" class="hide-toggle shown"></a>' +
         '<div id="qv-info"></div>' +
-        '<a id="qv-comments-toggle" data-for="comments" class="hide-toggle hidden"></a>' +
+        '<a id="qv-comments-toggle" data-for="comments" class="hide-toggle shown"></a>' +
         '<div id="qv-comments"></div>' +
         '</div></div>';
 
@@ -127,9 +127,14 @@ var quickview = function() {
     }
 
     function add_event_listener_to_thumbnail_link(link) {
-        link.find('img').hoverIntent(function(e) {
+        /*link.find('img').hoverIntent(function(e) {
             show_qv(link);
-        }, function(e) {return;});
+        }, jQuery.noop);*/
+        link.find('img').hoverIntent({
+            over: function() {show_qv(link);},
+            out: jQuery.noop,
+            interval: 170,
+        });
         // the second function does nothing, because hoverIntent
         // triggers the the given function twice if only 1 is given
     }
@@ -208,6 +213,7 @@ var quickview = function() {
     function add_info(api_data) {
         var a = find_xml_node(api_data, 'media:description');
         qv_info.append(a.textContent);
+        truncate_div_with_long_text(qv_info);
     }
 
     function update_qv_comments(id) {
@@ -304,15 +310,8 @@ var quickview = function() {
 
     function add_toggle_show_hide(click_target, toggleable_node) {
         click_target.click(function (e) {
-            click_target.toggleClass('shown');
             click_target.toggleClass('hidden');
             toggleable_node.toggle();
-            if (click_target[0].id == 'qv-info-toggle') {
-                $('#qv-comments').toggleClass('large');
-            }
-            if (click_target[0].id == 'qv-comments-toggle') {
-                $('#qv-info').toggleClass('large');
-            }
         });
     }
 
@@ -345,6 +344,34 @@ var quickview = function() {
                 }
             });
             return outer_v;
+        }
+    }
+
+    function truncate_div_with_long_text(jQuery_div) {
+        // splits the div in to 3 parts, summary, details and toggle
+        var text = jQuery_div.text(),
+            threshold = 350, // characters
+            split_point = 300, // characters
+            html,
+            truncate_toggle,
+            details;
+        if (text.length > threshold) {
+            html = [
+                '<span class="summary">',
+                text.substring(0, split_point),
+                '</span>',
+                '<span class="details hidden">',
+                text.substring(split_point),
+                '</span>',
+                '<a class="truncate hidden"></a>',
+                ].join('');
+            jQuery_div.html(html);
+            truncate_toggle = jQuery_div.find('a.truncate'),
+            truncate_toggle.click(function(e) {
+                details = truncate_toggle.siblings('span.details');
+                details.toggleClass('hidden');
+                truncate_toggle.toggleClass('hidden');
+            });
         }
     }
 
