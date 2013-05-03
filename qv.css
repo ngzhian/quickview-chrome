@@ -83,7 +83,7 @@
     content:"M";
 }
 
-.hide-toggle {
+.hide-toggle, .qv-load-comments, .jump{
     height: 20px;
     line-height: 20px;
     background: rgb(136, 45, 49);

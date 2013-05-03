@@ -29,6 +29,8 @@ var quickview = function() {
         shown_id = null,
         is_big;
 
+    /* Function that initializes stuff */
+
     function initialize() {
         init_dom();
         set_qv_bar_behavior();
@@ -69,6 +71,8 @@ var quickview = function() {
         is_big = !is_big;
     }
 
+    /* Functions that deal with sizing */
+
     function contract() {
         contract_iframe();
         setTimeout(contract_qv, 400);
@@ -89,10 +93,6 @@ var quickview = function() {
         qv.attr('class', 'small');
     }
 
-    function resize_using_class(jquery_object, size) {
-        jquery_object.attr('class', size);
-    }
-
     function expand_iframe() {
         set_iframe_size(854, 510);
     }
@@ -107,6 +107,9 @@ var quickview = function() {
         containment: "document"
         } );
     }
+
+    /* Functions to do with retrieving links and adding
+     * event listeners */
 
     function get_all_thumbnail_links() {
         // video links have href="/watch?v=[0-0a-zA-Z=]+"
@@ -127,17 +130,15 @@ var quickview = function() {
     }
 
     function add_event_listener_to_thumbnail_link(link) {
-        /*link.find('img').hoverIntent(function(e) {
-            show_qv(link);
-        }, jQuery.noop);*/
         link.find('img').hoverIntent({
             over: function() {show_qv(link);},
             out: jQuery.noop,
             interval: 170,
         });
-        // the second function does nothing, because hoverIntent
-        // triggers the the given function twice if only 1 is given
     }
+
+
+    /* Functions that makes the video player work */
 
     // Takes a <a> tag with href to a YouTube url and pops up qv
     function show_qv(video_link) {
@@ -161,7 +162,7 @@ var quickview = function() {
 
     function update_sizes() {
         if (shown_id === null) {
-            resize_using_class(qv, 'large');
+            qv.attr('class', 'large');
         }
     }
 
@@ -211,8 +212,8 @@ var quickview = function() {
     }
 
     function add_info(api_data) {
-        var a = find_xml_node(api_data, 'media:description');
-        qv_info.append(a.textContent);
+        var desc = get_nodes_from_xml(api_data, 'media:description')[0];
+        qv_info.append(desc.textContent);
         truncate_div_with_long_text(qv_info);
     }
 
@@ -241,6 +242,34 @@ var quickview = function() {
         $('entry', api_data).each(function() {
             qv_comments.append(form_nice_comment($(this)));
         });
+        var more = get_more_comments(api_data);
+        if (more) {
+            add_load_more_buttton(more);
+        }
+        add_jump_to_top_link();
+    }
+
+    function add_jump_to_top_link() {
+        qv_comments.append('<a class="jump">Jump to top</a>');
+        var qv_jump = qv_comments.find('a.jump');
+        qv_jump.click(function(e) {
+            qv_side.scrollTop(0);
+        });
+    }
+    
+    function get_more_comments(xml) {
+        var arr = get_nodes_from_xml_with_attribute(xml, 'link', 'rel', 'next');
+        return arr;
+    }
+
+    function add_load_more_buttton(element) {
+        var url = element.getAttribute('href');
+        qv_comments.append('<a class="qv-load-comments">load more</a>');
+        qv_load_more = qv_comments.find('.qv-load-comments');
+        qv_load_more.click(function(e) {
+            qv_load_more.css('display', 'none');
+            $.get(url, add_comments);
+        });
     }
 
     function form_nice_comment(entry) {
@@ -260,6 +289,9 @@ var quickview = function() {
     function form_nice_date(date) {
         return date.slice(5,10) + " " + date.slice(11,16);
     }
+
+    /* Functions that maintains quickview behavior
+     * e.g. when new thumbnails or page loads */
 
     function add_window_event_listeners() {
         $(document).click(clears_qv_on_click)
@@ -330,20 +362,38 @@ var quickview = function() {
                 get_to_work);
     }
 
-    function find_xml_node(xml, name) {
+    /* Helper functions */
+
+    // Returns an array of xml nodes that matches 'name'
+    function get_nodes_from_xml(xml, name) {
+        var arr = [];
         if (xml.nodeName == name) {
-            return xml;
-        } else if (xml.childNodes.length == 0) { 
-            return null;
+            arr.push(xml);
         } else {
-            var outer_v = null;
-            jQuery.each(xml.childNodes, function (i, value) {
-                var node = find_xml_node(value, name);
-                if (node != null) {
-                    outer_v = node;
-                }
-            });
-            return outer_v;
+            for (var i = 0; i < xml.childNodes.length; i++) {
+                var child = xml.childNodes[i];
+                arr = arr.concat(get_nodes_from_xml(child, name));
+            }
+        }
+        return arr;
+    }
+
+    function get_nodes_from_xml_with_attribute(xml, name, attribute, value) {
+        var arr = get_nodes_from_xml(xml, name);
+        for (var i = 0; i < arr.length; i++) {
+            if (xml_node_has_attribute_and_value(arr[i], attribute, value)) {
+                return arr[i];
+            }
+        }
+    }
+
+    function xml_node_has_attribute_and_value(node, attr, val) {
+        var attrs = node.attributes;
+        for (var i = 0; i < attrs.length; i++) {
+            if (attrs[i].nodeName == attr &&
+                    attrs[i].nodeValue == val) {
+                        return true;
+            }
         }
     }
 
