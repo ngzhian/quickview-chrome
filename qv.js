@@ -321,7 +321,7 @@ var quickview = function() {
         watch_for_load_more_at_channel_page();
     }
 
-    function watch_for_new_page_load() {
+    function watch_for_load_more_at_channel_page() {
         $('.feed-list-container').on('DOMNodeInserted DOMNodeRemoved',
                 get_to_work);
     }
@@ -350,5 +350,5 @@ var quickview = function() {
 
     initialize();
     get_to_work();
-    watch_for_new_page_load();
+    watch_for_new_thumbnails();
 }();
