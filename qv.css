@@ -10,6 +10,7 @@
     height: 30px;
     color: #595959;
     overflow: hidden;
+    font-family: sans;
 }
 
 #qv.small {
@@ -47,7 +48,7 @@
 
 #qv-bar {
     width: 100%;
-    height: 30px;
+    height: 7%;
     background: #af2b26;
     line-height: 30px;
     color: #EEEEEE
@@ -82,13 +83,39 @@
     content:"M";
 }
 
+.hide-toggle {
+    height: 4%;
+    background: rgb(136, 45, 49);
+    display: block;
+    padding-top: 0.3em;
+    padding-left: 0.75em;
+    color: rgb(248, 242, 242);
+}
+
+.hide-toggle.shown:before {
+    content:"Hide " attr(data-for);
+}
+
+.hide-toggle.hidden:before {
+    content:"Show " attr(data-for);
+}
+
+.hide-toggle:hover {
+    font-weight: bold;
+    text-decoration: none;
+}
+
 #qv-info {
-    height: 100px;
+    height: 20%;
     overflow: auto;
     word-break: break-word;
     padding-top: 0.3em;
-    padding-left: 1.0em;
+    padding-left: 0.75em;
     line-height: 1.5em;
+}
+
+#qv-info.large {
+    height: 82%;
 }
 
 #qv-comments {
@@ -96,14 +123,12 @@
     -moz-transition: height 0.4s 0.0s;
     transition: height 0.4s 0.0s;
     overflow: auto;
+    height: 62%;
+    word-break: break-word;
 }
 
-#qv.large #qv-comments {
-    height: 480px;
-}
-
-#qv.small #qv-comments {
-    height: 360px;
+#qv-comments.large {
+    height: 82%;
 }
 
 .qv-comment {
@@ -111,7 +136,6 @@
 }
 
 .qv-content {
-    font-size: 1.125em;
 }
 
 .qv-author {

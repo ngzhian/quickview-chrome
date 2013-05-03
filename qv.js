@@ -8,12 +8,15 @@ var quickview = function() {
         '<h2 id="qv-title"><a href="' + qv_url + '">Quickview</a></h2>' +
         '<a id="qv-size-toggle" class="contract"></a>' +
         '</div>' +
+        '<a id="qv-info-toggle" data-for="video info" class="hide-toggle shown"></a>' +
         '<div id="qv-info"></div>' +
-        '<div id="qv-comments" class="expander"></div>' +
+        '<a id="qv-comments-toggle" data-for="comments" class="hide-toggle hidden"></a>' +
+        '<div id="qv-comments"></div>' +
         '</div></div>';
 
+
     var body = $('body'), 
-    // references to DOM elements
+        // references to DOM elements
         qv,
         iframe, // iframe node itself
         qv_side,
@@ -21,7 +24,7 @@ var quickview = function() {
         qv_size_toggle,
         qv_info,
         qv_comments,
-    // attributes needed for functions
+        // attributes needed for functions
         video_id,
         shown_id = null,
         is_big;
@@ -181,6 +184,7 @@ var quickview = function() {
     }
 
     function update_qv_info(id) {
+        add_toggle_show_hide($('#qv-info-toggle'), $('#qv-info'));
         if (id != shown_id) {
             reset_qv_info();
             get_and_add_info_from_api(id);
@@ -207,6 +211,7 @@ var quickview = function() {
     }
 
     function update_qv_comments(id) {
+        add_toggle_show_hide($('#qv-comments-toggle'), $('#qv-comments'));
         if (id != shown_id) {
             reset_qv_comments();
             get_and_add_comments_from_api(id);
@@ -295,6 +300,20 @@ var quickview = function() {
         shown = false;
         shown_id = null;
         is_big = true;
+    }
+
+    function add_toggle_show_hide(click_target, toggleable_node) {
+        click_target.click(function (e) {
+            click_target.toggleClass('shown');
+            click_target.toggleClass('hidden');
+            toggleable_node.toggle();
+            if (click_target[0].id == 'qv-info-toggle') {
+                $('#qv-comments').toggleClass('large');
+            }
+            if (click_target[0].id == 'qv-comments-toggle') {
+                $('#qv-info').toggleClass('large');
+            }
+        });
     }
 
     function watch_for_new_thumbnails() {
