@@ -25,21 +25,15 @@ var quickview = function() {
         qv_info,
         qv_comments,
         // attributes needed for functions
-        video_id,
+        video_id = null,
         shown_id = null,
-        is_big;
+        is_big = true;
 
     /* Function that initializes stuff */
-
     function initialize() {
         init_dom();
         set_qv_bar_behavior();
         add_window_event_listeners();
-    }
-
-    function get_to_work() {
-        links = get_all_thumbnail_links();
-        add_event_listener_to_all_thumbnail_links(links);
     }
 
     function init_dom() {
@@ -156,7 +150,6 @@ var quickview = function() {
     // the result will be 'v=MCaw6fv8ZxA'
     function get_video_id_from(video_link) {
         var url = video_link.attr('href');
-        //console.log(url.match(/v(\=|\/)(\w*)/)[0].substring(2));
         return url.match(/v(\=|\/)([^=&\/]+)/)[0].substring(2);
     }
 
@@ -274,11 +267,16 @@ var quickview = function() {
 
     function form_nice_comment(entry) {
         var author = entry.find('author').find('name').text();
+        var author_gdata_url = entry.find('author').find('uri').text();
+        var author_url = author_gdata_url.substring(
+                author_gdata_url.lastIndexOf('/'), author_gdata_url.length);
         var date = entry.find('published').text();
         var content = entry.find('content').text();
 
         var comment = '<div class="qv-comment">' +
-            '<span class="qv-author">' + author + '</span>' +
+            '<span class="qv-author">' + 
+            '<a href="' + author_url + '">' +
+            author + '</a>' + '</span>' +
             '<span class="qv-date">' + form_nice_date(date) + '</span>' +
             '<p class="qv-content">' + content + '</p>' +
             '</div>';
@@ -350,6 +348,7 @@ var quickview = function() {
     function watch_for_new_thumbnails() {
         watch_for_new_page_load();
         watch_for_load_more_at_channel_page();
+        watch_for_watch_more_related_at_video_page();
     }
 
     function watch_for_load_more_at_channel_page() {
@@ -357,9 +356,29 @@ var quickview = function() {
                 get_to_work);
     }
 
-    function watch_for_new_page_load() {
-        $('.feed-container').on('DOMNodeInserted DOMNodeRemoved',
+    function watch_for_watch_more_related_at_video_page() {
+        $('#watch-more-related').on('DOMNodeInserted DOMNodeRemoved',
                 get_to_work);
+    }
+
+    // Need to manually keep track of number of child nodes to prevent
+    // a bug where it keeps calling get_to_work()
+    function watch_for_new_page_load() {
+        var feed_container = $('.feed-container');
+        var num_feed_page = feed_container.find('.feed-page').length;
+        $('.feed-container').on('DOMNodeInserted DOMNodeRemoved',
+                function() {
+                    var new_num_feed_page = feed_container.find('.feed-page').length;
+                    if (new_num_feed_page > num_feed_page) {
+                        get_to_work();
+                    }
+                    num_feed_page = new_num_feed_page;
+                });
+    }
+
+    function get_to_work() {
+        links = get_all_thumbnail_links();
+        add_event_listener_to_all_thumbnail_links(links);
     }
 
     /* Helper functions */
@@ -413,12 +432,14 @@ var quickview = function() {
                 '<span class="details hidden">',
                 text.substring(split_point),
                 '</span>',
+                '<div class="truncate-button">',
                 '<a class="truncate hidden"></a>',
+                '</div>'
                 ].join('');
             jQuery_div.html(html);
             truncate_toggle = jQuery_div.find('a.truncate'),
             truncate_toggle.click(function(e) {
-                details = truncate_toggle.siblings('span.details');
+                details = truncate_toggle.parent().siblings('span.details');
                 details.toggleClass('hidden');
                 truncate_toggle.toggleClass('hidden');
             });
