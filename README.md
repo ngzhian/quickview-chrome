@@ -30,14 +30,13 @@ Finally just click the "Load unpacked extension..." button and browse
 to where you cloned the repository. Hopefully everything works fine!
 
 ##Who?
-Hi, people call me Zhi An, but you can call me Tonight,
+Hi, people call me Zhi An,
 and I made this because I like to watch YouTube videos and I don't like to click that much.
 
 ##TODO
-- ~~Paginate comments~~ Using version 2 of the YouTube Data API, so I can now get all the comments at once!
+Options to set hover timing.
 
 ##Bugs.
-Take a look at ss_2.png above, the page's video is lies above the Quickview comments section, but below the iframe video. I have no idea why.
 
 ##License
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Quickview</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/ngzhian/" property="cc:attributionName" rel="cc:attributionURL">Ng Zhi An</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.

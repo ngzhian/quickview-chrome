@@ -127,7 +127,7 @@ var quickview = function() {
         link.find('.yt-thumb img').hoverIntent({
             over: function() {show_qv(link);},
             out: jQuery.noop,
-            interval: 170,
+            interval: 370,
         });
     }
 
@@ -179,7 +179,7 @@ var quickview = function() {
     }
 
     function make_embed_url_from_video_id(id) {
-        return 'http://www.youtube.com/embed/'+video_id+'?autoplay=1';
+        return 'https://www.youtube.com/embed/'+video_id+'?autoplay=1';
     }
 
     function update_qv_info(id) {
