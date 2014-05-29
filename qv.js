@@ -124,7 +124,7 @@ var quickview = function() {
     }
 
     function add_event_listener_to_thumbnail_link(link) {
-        link.find('.yt-thumb img').hoverIntent({
+        link.find('img').hoverIntent({
             over: function() {show_qv(link);},
             out: jQuery.noop,
             interval: 370,
