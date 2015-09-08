@@ -55,12 +55,11 @@
     color: #EEEEEE
 }
 
-#qv-side a {
+#qv-bar a, a.hide-toggle, a.jump {
     color: rgb(248, 242, 242);
 }
 
 #qv-side a:hover {
-    //font-weight: bold;
     text-decoration: underline;
 }
 
