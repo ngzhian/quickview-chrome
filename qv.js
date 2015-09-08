@@ -279,10 +279,10 @@ var quickview = function() {
     }
 
     function form_nice_comment(entry) {
-      var author = entry.snippet.topLevelComment.snippet.authorDisplayName;
-      var author_gdata_url = '';
-      var author_url = '';
-      var date = entry.snippet.topLevelComment.snippet.updatedAt;
+      var snippet = entry.snippet.topLevelComment.snippet;
+      var author = snippet.authorDisplayName;
+      var author_url = snippet.authorChannelUrl || snippet.authorGoogleplusProfileUrl;
+      var date = snippet.updatedAt;
       var content = entry.snippet.topLevelComment.snippet.textDisplay;
       var comment = '<div class="qv-comment">' +
           '<span class="qv-author">' +
