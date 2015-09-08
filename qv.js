@@ -1,3 +1,28 @@
+// Simple object to help manage getting URLs to make API calls to YouTube
+var YT = (function() {
+  var API_KEY = 'AIzaSyAJgu87-5TWOeMtKHOnaiJXIhQtUlQSlRw';
+  var YT_BASE_URL = 'https://www.googleapis.com/youtube/v3/'
+  var VIDEO_URL = YT_BASE_URL + 'videos?id=';
+  var VIDEO_PARTS = '&part=snippet,statistics';
+  var COMMENTS_URL = YT_BASE_URL + 'commentThreads?videoId=';
+  var COMMENTS_PARTS = '&part=id,replies,snippet'
+
+  function video_url(video_id) {
+    return VIDEO_URL + video_id + '&key=' + API_KEY + VIDEO_PARTS;
+  }
+
+  function comments_url(video_id, pageToken) {
+    var url = COMMENTS_URL + video_id + '&key=' + API_KEY + COMMENTS_PARTS;
+    if (pageToken) { url += '&pageToken=' + pageToken; }
+    return url
+  }
+
+  return {
+    video_url: video_url,
+    comments_url: comments_url
+  }
+}());
+
 // youtube embed iframe video size is 854 x 510 and 640 x 390
 var quickview = function() {
     var qv_url = '#';
