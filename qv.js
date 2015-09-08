@@ -40,7 +40,7 @@ var quickview = function() {
         '</div></div>';
 
 
-    var body = $('body'), 
+    var body = $('body'),
         // references to DOM elements
         qv,
         iframe, // iframe node itself
@@ -170,7 +170,7 @@ var quickview = function() {
         update_attributes(video_id);
     }
 
-    // example url: https://www.youtube.com/watch?v=MCaw6fv8ZxA 
+    // example url: https://www.youtube.com/watch?v=MCaw6fv8ZxA
     // regex to use: v(\=|\/)(\w*)
     // the result will be 'v=MCaw6fv8ZxA'
     function get_video_id_from(video_link) {
@@ -220,18 +220,17 @@ var quickview = function() {
     }
 
     function get_and_add_info_from_api(id) {
-        $.get(get_api_url_for_info(video_id), add_info);
+        $.get(YT.video_url(video_id), add_info);
     }
 
-    function get_api_url_for_info(video_id) {
-        //'https://www.googleapis.com/youtube/v3/videos
-        return 'https://gdata.youtube.com/feeds/api/videos/' +
-            video_id + '?v=2';
+    function get_description(json_response) {
+      obj = json_response;
+      return obj.items[0].snippet.description;
     }
 
     function add_info(api_data) {
-        var desc = get_nodes_from_xml(api_data, 'media:description')[0];
-        qv_info.append(desc.textContent);
+        var desc = get_description(api_data);
+        qv_info.append(desc.replace(/\n/g, '<br>'));
         truncate_div_with_long_text(qv_info);
     }
 
@@ -248,64 +247,51 @@ var quickview = function() {
     }
 
     function get_and_add_comments_from_api(video_id) {
-        $.get(get_api_url_for_comments(video_id), add_comments);
-    }
-
-    function get_api_url_for_comments(video_id) {
-        return 'https://gdata.youtube.com/feeds/api/videos/' +
-            video_id + '/comments'
+        $.get(YT.comments_url(video_id), add_comments);
     }
 
     function add_comments(api_data) {
-        $('entry', api_data).each(function() {
-            qv_comments.append(form_nice_comment($(this)));
-        });
-        var more = get_more_comments(api_data);
-        if (more) {
-            add_load_more_buttton(more);
-        }
-        add_jump_to_top_link();
+      $.each(api_data.items, function(i, item) {
+        qv_comments.append(form_nice_comment(item));
+      });
+      add_load_more_button(api_data)
+      add_jump_to_top_link();
     }
 
     function add_jump_to_top_link() {
-        qv_comments.append('<a class="jump">Jump to top</a>');
-        var qv_jump = qv_comments.find('a.jump');
-        qv_jump.click(function(e) {
-            qv_side.scrollTop(0);
-        });
-    }
-    
-    function get_more_comments(xml) {
-        var arr = get_nodes_from_xml_with_attribute(xml, 'link', 'rel', 'next');
-        return arr;
+      qv_comments.append('<a class="jump">Jump to top</a>');
+      var qv_jump = qv_comments.find('a.jump');
+      qv_jump.click(function(e) {
+        qv_side.scrollTop(0);
+      });
     }
 
-    function add_load_more_buttton(element) {
-        var url = element.getAttribute('href');
-        qv_comments.append('<a class="qv-load-comments">load more</a>');
-        qv_load_more = qv_comments.find('.qv-load-comments');
-        qv_load_more.click(function(e) {
-            qv_load_more.css('display', 'none');
-            $.get(url, add_comments);
-        });
+    function add_load_more_button(data) {
+      if (!data.nextPageToken) return;
+      var url = YT.comments_url(
+        data.items[0].snippet.videoId, data.nextPageToken);
+      qv_comments.append('<a class="qv-load-comments">load more</a>');
+      qv_load_more = qv_comments.find('.qv-load-comments');
+      qv_load_more.click(function(e) {
+        qv_load_more.css('display', 'none');
+        $.get(url, add_comments);
+      });
     }
 
     function form_nice_comment(entry) {
-        var author = entry.find('author').find('name').text();
-        var author_gdata_url = entry.find('author').find('uri').text();
-        var author_url = author_gdata_url.substring(
-                author_gdata_url.lastIndexOf('/'), author_gdata_url.length);
-        var date = entry.find('published').text();
-        var content = entry.find('content').text();
-
-        var comment = '<div class="qv-comment">' +
-            '<span class="qv-author">' + 
-            '<a href="' + author_url + '">' +
-            author + '</a>' + '</span>' +
-            '<span class="qv-date">' + form_nice_date(date) + '</span>' +
-            '<p class="qv-content">' + content + '</p>' +
-            '</div>';
-        return comment;
+      var author = entry.snippet.topLevelComment.snippet.authorDisplayName;
+      var author_gdata_url = '';
+      var author_url = '';
+      var date = entry.snippet.topLevelComment.snippet.updatedAt;
+      var content = entry.snippet.topLevelComment.snippet.textDisplay;
+      var comment = '<div class="qv-comment">' +
+          '<span class="qv-author">' +
+          '<a href="' + author_url + '">' +
+          author + '</a>' + '</span>' +
+          '<span class="qv-date">' + form_nice_date(date) + '</span>' +
+          '<p class="qv-content">' + content + '</p>' +
+          '</div>';
+      return comment;
     }
 
     // date is in the format yyyy-mm-ddThh:mm:ss.000Z
@@ -408,54 +394,22 @@ var quickview = function() {
 
     /* Helper functions */
 
-    // Returns an array of xml nodes that matches 'name'
-    function get_nodes_from_xml(xml, name) {
-        var arr = [];
-        if (xml.nodeName == name) {
-            arr.push(xml);
-        } else {
-            for (var i = 0; i < xml.childNodes.length; i++) {
-                var child = xml.childNodes[i];
-                arr = arr.concat(get_nodes_from_xml(child, name));
-            }
-        }
-        return arr;
-    }
-
-    function get_nodes_from_xml_with_attribute(xml, name, attribute, value) {
-        var arr = get_nodes_from_xml(xml, name);
-        for (var i = 0; i < arr.length; i++) {
-            if (xml_node_has_attribute_and_value(arr[i], attribute, value)) {
-                return arr[i];
-            }
-        }
-    }
-
-    function xml_node_has_attribute_and_value(node, attr, val) {
-        var attrs = node.attributes;
-        for (var i = 0; i < attrs.length; i++) {
-            if (attrs[i].nodeName == attr &&
-                    attrs[i].nodeValue == val) {
-                        return true;
-            }
-        }
-    }
-
     function truncate_div_with_long_text(jQuery_div) {
         // splits the div in to 3 parts, summary, details and toggle
+        var html = jQuery_div[0].innerHTML;
         var text = jQuery_div.text(),
             threshold = 350, // characters
             split_point = 300, // characters
             html,
             truncate_toggle,
             details;
-        if (text.length > threshold) {
+        if (html.length > threshold) {
             html = [
                 '<span class="summary">',
-                text.substring(0, split_point),
+                html.substring(0, split_point),
                 '</span>',
                 '<span class="details hidden">',
-                text.substring(split_point),
+                html.substring(split_point),
                 '</span>',
                 '<div class="truncate-button">',
                 '<a class="truncate hidden"></a>',
