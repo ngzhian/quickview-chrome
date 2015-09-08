@@ -1,5 +1,17 @@
+2.0.2 (2015-08-08)
+==================
+
+* Fix styling of "load more" link
+
+2.0.1 (2015-08-08)
+==================
+
+* Fix author links
+* Fix link styling in comments
+
 2.0.0 (2015-08-08)
 ==================
 
 * Update to work with Youtube API v3
 * clean up code (work in progress)
+* Add CHANGELOG.mdown

@@ -55,7 +55,7 @@
     color: #EEEEEE
 }
 
-#qv-bar a, a.hide-toggle, a.jump {
+#qv-bar a, a.hide-toggle, a.jump, a.qv-load-comments {
     color: rgb(248, 242, 242);
 }
 
