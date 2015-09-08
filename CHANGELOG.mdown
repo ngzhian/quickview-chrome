@@ -1,0 +1,5 @@
+2.0.0 (2015-08-08)
+==================
+
+* Update to work with Youtube API v3
+* clean up code (work in progress)
