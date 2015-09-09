@@ -1,7 +1,7 @@
 #qv {
-    -webkit-transition: width 0.4s 0.0s, height 0.4s 0.4s;
-    -moz-transition: width 0.4s 0.0s, height 0.4s 0.4s;
-    transition: width 0.4s 0.0s, height 0.4s 0.4s;
+    -webkit-transition: width 0.3s 0.0s, height 0.3s 0.3s;
+    -moz-transition: width 0.3s 0.0s, height 0.3s 0.3s;
+    transition: width 0.3s 0.0s, height 0.3s 0.3s;
     position: fixed;
     left: 2%;
     top: 2%;
@@ -77,12 +77,10 @@
     float: right;
     padding-right: 0.75em;
 }
-
-#qv-size-toggle.contract:before {
+#qv.large #qv-size-toggle:before {
     content:"-";
 }
-
-#qv-size-toggle.expand:before {
+#qv.small #qv-size-toggle:before {
     content:"+";
 }
 
