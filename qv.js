@@ -1,11 +1,13 @@
 // Simple object to help manage getting URLs to make API calls to YouTube
 var YT = (function() {
   var API_KEY = 'AIzaSyAJgu87-5TWOeMtKHOnaiJXIhQtUlQSlRw';
-  var YT_BASE_URL = 'https://www.googleapis.com/youtube/v3/'
+  var YT_BASE_URL = 'https://www.googleapis.com/youtube/v3/';
   var VIDEO_URL = YT_BASE_URL + 'videos?id=';
   var VIDEO_PARTS = '&part=snippet,statistics';
   var COMMENTS_URL = YT_BASE_URL + 'commentThreads?videoId=';
-  var COMMENTS_PARTS = '&part=id,replies,snippet'
+  var COMMENTS_PARTS = '&part=id,replies,snippet';
+  var EMBED_URL = 'https://www.youtube.com/embed/';
+  var EMBED_QUERY = '?autoplay=1';
 
   function video_url(video_id) {
     return VIDEO_URL + video_id + '&key=' + API_KEY + VIDEO_PARTS;
@@ -17,9 +19,14 @@ var YT = (function() {
     return url
   }
 
+  function embed_url(video_id) {
+    return `${EMBED_URL}${video_id}${EMBED_QUERY}`;
+  }
+
   return {
     video_url: video_url,
-    comments_url: comments_url
+    comments_url: comments_url,
+    embed_url: embed_url
   }
 }());
 
@@ -30,13 +37,18 @@ var quickview = function() {
         '<iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe>' +
         '<div id="qv-side">' +
         '<div id="qv-bar">' +
-        '<h2 id="qv-title"><a href="' + qv_url + '">Quickview</a></h2>' +
+        '<h2 id="qv-qv"><a href="' + qv_url + '">Quickview</a></h2>' +
         '<a id="qv-size-toggle" class="contract"></a>' +
         '</div>' +
-        '<a id="qv-info-toggle" data-for="video info" class="hide-toggle shown"></a>' +
-        '<div id="qv-info"></div>' +
-        '<a id="qv-comments-toggle" data-for="comments" class="hide-toggle shown"></a>' +
-        '<div id="qv-comments"></div>' +
+        '<div id="qv-info" class="yt-card yt-card-has-padding">' +
+        '<h1 id="qv-title">' +
+        '</h1>' +
+        '<div id="qv-desc">' +
+        '</div>' +
+        '</div>' +
+        '<div class="yt-card yt-card-has-padding">' +
+        '<div id="qv-comments" class="comments"></div>' +
+        '</div>' +
         '</div></div>';
 
 
@@ -48,6 +60,8 @@ var quickview = function() {
         qv_bar,
         qv_size_toggle,
         qv_info,
+        qv_title,
+        qv_desc,
         qv_comments,
         // attributes needed for functions
         video_id = null,
@@ -69,6 +83,8 @@ var quickview = function() {
         qv_bar = qv_side.find('#qv-bar');
         qv_size_toggle = qv_bar.find('#qv-size-toggle');
         qv_info = qv_side.find('#qv-info');
+        qv_title = qv_side.find('#qv-title');
+        qv_desc = qv_side.find('#qv-desc');
         qv_comments = qv_side.find('#qv-comments');
     }
 
@@ -195,7 +211,7 @@ var quickview = function() {
             setTimeout(expand_iframe, 800);
         }
         if (shown_id != id) {
-            update_iframe_src(make_embed_url_from_video_id(id));
+            update_iframe_src(YT.embed_url(id));
         }
     }
 
@@ -203,24 +219,15 @@ var quickview = function() {
         iframe.attr('src', url);
     }
 
-    function make_embed_url_from_video_id(id) {
-        return 'https://www.youtube.com/embed/'+video_id+'?autoplay=1';
-    }
-
-    function update_qv_info(id) {
-        add_toggle_show_hide($('#qv-info-toggle'), $('#qv-info'));
-        if (id != shown_id) {
-            reset_qv_info();
-            get_and_add_info_from_api(id);
-        }
+    function update_qv_info(video_id) {
+      if (video_id === shown_id) return;
+      reset_qv_info();
+      $.get(YT.video_url(video_id)).done(add_info);
     }
 
     function reset_qv_info() {
-        qv_info.empty();
-    }
-
-    function get_and_add_info_from_api(id) {
-        $.get(YT.video_url(video_id), add_info);
+        qv_title.empty();
+        qv_desc.empty();
     }
 
     function get_description(json_response) {
@@ -228,26 +235,23 @@ var quickview = function() {
       return obj.items[0].snippet.description;
     }
 
-    function add_info(api_data) {
-        var desc = get_description(api_data);
-        qv_info.append(desc.replace(/\n/g, '<br>'));
-        truncate_div_with_long_text(qv_info);
+    function add_info(data) {
+      var desc = data.items[0].snippet.description;
+      var desc = get_description(data);
+      var title = data.items[0].snippet.title;
+      qv_title.text(title);
+      qv_desc.append(desc.replace(/\n/g, '<br>'));
+      truncate_div_with_long_text(qv_desc);
     }
 
-    function update_qv_comments(id) {
-        add_toggle_show_hide($('#qv-comments-toggle'), $('#qv-comments'));
-        if (id != shown_id) {
-            reset_qv_comments();
-            get_and_add_comments_from_api(id);
-        }
+    function update_qv_comments(video_id) {
+      if (video_id === shown_id) return;
+      reset_qv_comments();
+      $.get(YT.comments_url(video_id)).done(add_comments);
     }
 
     function reset_qv_comments() {
         qv_comments.empty();
-    }
-
-    function get_and_add_comments_from_api(video_id) {
-        $.get(YT.comments_url(video_id), add_comments);
     }
 
     function add_comments(api_data) {
@@ -255,23 +259,14 @@ var quickview = function() {
         qv_comments.append(form_nice_comment(item));
       });
       add_load_more_button(api_data)
-      add_jump_to_top_link();
-    }
-
-    function add_jump_to_top_link() {
-      qv_comments.append('<a class="jump">Jump to top</a>');
-      var qv_jump = qv_comments.find('a.jump');
-      qv_jump.click(function(e) {
-        qv_side.scrollTop(0);
-      });
     }
 
     function add_load_more_button(data) {
       if (!data.nextPageToken) return;
       var url = YT.comments_url(
         data.items[0].snippet.videoId, data.nextPageToken);
-      qv_comments.append('<a class="qv-load-comments">load more</a>');
-      qv_load_more = qv_comments.find('.qv-load-comments');
+      qv_comments.append('<div class="paginator">load more</div>');
+      qv_load_more = qv_comments.find('.paginator');
       qv_load_more.click(function(e) {
         qv_load_more.css('display', 'none');
         $.get(url, add_comments);
@@ -283,13 +278,28 @@ var quickview = function() {
       var author = snippet.authorDisplayName;
       var author_url = snippet.authorChannelUrl || snippet.authorGoogleplusProfileUrl;
       var date = snippet.updatedAt;
-      var content = entry.snippet.topLevelComment.snippet.textDisplay;
-      var comment = '<div class="qv-comment">' +
-          '<span class="qv-author">' +
-          '<a href="' + author_url + '">' +
-          author + '</a>' + '</span>' +
-          '<span class="qv-date">' + form_nice_date(date) + '</span>' +
-          '<p class="qv-content">' + content + '</p>' +
+      var content = snippet.textDisplay;
+      var imgUrl = snippet.authorProfileImageUrl;
+      var comment = '<div class="comment-entry">' +
+          '<div class="comment-item">' +
+          '<a href="' + author_url + '" target="_blank" class="g-hovercard">' +
+          '<img class="user-photo" src="' + imgUrl + '" width="48">' +
+          '</a>' +
+          '<div class="content">' +
+          '<div class="comment-header">' +
+          '<a href="' + author_url + '" class="user-name g-hovercard" target="_blank">' + author + '</a>' +
+          '<span class="spacer"></span>' +
+          '<span class="time">' + form_nice_date(date) + '</span>' +
+          '</div>' +
+          '<div class="comment-text">' +
+          '<div class="comment-text-content">' +
+          content +
+          '</div>' +
+          '</div>' +
+          '<div class="comment-footer">' +
+          '</div>' +
+          '</div>' +
+          '</div>' +
           '</div>';
       return comment;
     }
@@ -347,13 +357,6 @@ var quickview = function() {
         shown = false;
         shown_id = null;
         is_big = true;
-    }
-
-    function add_toggle_show_hide(click_target, toggleable_node) {
-        click_target.click(function (e) {
-            click_target.toggleClass('hidden');
-            toggleable_node.toggle();
-        });
     }
 
     function watch_for_new_thumbnails() {

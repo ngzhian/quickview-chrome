@@ -9,7 +9,7 @@
     width: 0px;
     height: 30px;
     color: #595959;
-    font-family: Sans;
+    font-family: Roboto,arial,sans-serif;
     overflow: hidden;
 }
 
@@ -33,7 +33,7 @@
     z-index: 9999;
     width: 350px;
     overflow: auto;
-    background: #FEFEFE;
+    background: rgb(241, 241, 241);
     -webkit-transition: height 0.4s 0.0s, left 0.4s 0.4s;
     -moz-transition: height 0.4s 0.0s, left 0.4s 0.4s;
     transition: height 0.4s 0.0s, left 0.4s 0.4s;
@@ -55,7 +55,7 @@
     color: #EEEEEE
 }
 
-#qv-bar a, a.hide-toggle, a.jump, a.qv-load-comments {
+#qv-bar a {
     color: rgb(248, 242, 242);
 }
 
@@ -63,9 +63,13 @@
     text-decoration: underline;
 }
 
-#qv-title {
+#qv-qv {
     padding-left: 0.75em;
     display: inline-block;
+}
+
+#qv-title {
+    margin-bottom: 13px;
 }
 
 #qv-size-toggle {
@@ -75,20 +79,11 @@
 }
 
 #qv-size-toggle.contract:before {
-    content:"m";
+    content:"-";
 }
 
 #qv-size-toggle.expand:before {
-    content:"M";
-}
-
-.hide-toggle, .qv-load-comments, .jump{
-    height: 20px;
-    line-height: 20px;
-    background: rgb(136, 45, 49);
-    display: block;
-    padding-top: 0.3em;
-    padding-left: 0.75em;
+    content:"+";
 }
 
 .hide-toggle:before {
@@ -100,19 +95,20 @@
 }
 
 #qv-side .truncate-button {
-    text-align: center
+    margin-top: 10px;
+    text-align: center;
+    border-top: 1px solid #e2e2e2;
 }
 
 #qv-side .truncate-button a.truncate {
-    font-weight: bold;
+    text-transform: uppercase;
     display: inline-block;
     line-height: 25px;
-    color: rgb(40, 40, 40);
+    color: #767676;
 }
 
 #qv-side .truncate-button a.truncate:hover {
-    border-color: #c6c6c6;
-    background: #f0f0f0;
+    color: #222;
     text-decoration: none;
 }
 
@@ -133,39 +129,7 @@
     display: inline;
 }
 
-#qv-info {
-    word-break: break-word;
-    padding-top: 0.3em;
-    padding-left: 0.75em;
-    line-height: 1.5em;
-}
 
 #qv-comments {
-    -webkit-transition: height 0.4s 0.0s;
-    -moz-transition: height 0.4s 0.0s;
-    transition: height 0.4s 0.0s;
-    word-break: break-word;
-}
-
-.qv-comment {
-    margin: 0.75em 1em;
-}
-
-.qv-content {
-}
-
-#qv-side .qv-author a {
-    color: #2793e6;
-    font-weight: bold;
-    font-size: 0.75em;
-}
-
-#qv-side .qv-author a:hover {
-    text-decoration: underline;
-}
-
-.qv-date {
-    color: #9F9F9F;
-    font-size: 0.75em;
-    float: right;
+    padding: 15px;
 }
