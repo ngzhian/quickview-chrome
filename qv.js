@@ -1,3 +1,5 @@
+"use strict";
+/*eslint eqeqeq:0, curly: 2*/
 // Simple object to help manage getting URLs to make API calls to YouTube
 var YT = (function() {
   var API_KEY = 'AIzaSyAJgu87-5TWOeMtKHOnaiJXIhQtUlQSlRw';
@@ -24,7 +26,7 @@ var YT = (function() {
   function comments_url(video_id, pageToken) {
     var url = COMMENTS_URL + video_id + '&key=' + API_KEY + COMMENTS_PARTS;
     if (pageToken) { url += '&pageToken=' + pageToken; }
-    return url
+    return url;
   }
 
   function embed_url(video_id) {
@@ -146,14 +148,13 @@ var QuickView = (function() {
 
   function add_load_more() {
     qv_comments.append('<div class="paginator">load more</div>');
-    qv_load_more = qv_comments.find('.paginator');
-    return qv_load_more;
+    return qv_comments.find('.paginator');
   }
 
   function is_showing(video_id) { return showing_id === video_id; }
 
   function show_video(video_id) {
-    if (is_showing(null)) expand();
+    if (is_showing(null)) { expand() };
     iframe.attr('src', YT.embed_url(video_id));
     showing_id = video_id;
   }
@@ -208,8 +209,8 @@ var quickview = function() {
 
     // Takes a <a> tag with href to a YouTube url and pops up qv
     function show_qv(video_link) {
-      video_id = YT.video_id_from_link(video_link);
-      if (QuickView.is_showing(video_id)) return;
+      var video_id = YT.video_id_from_link(video_link);
+      if (QuickView.is_showing(video_id)) { return; }
 
       QuickView.show_video(video_id);
       $.get(YT.video_url(video_id)).done(add_info);
@@ -227,7 +228,7 @@ var quickview = function() {
     }
 
     function add_load_more_button(data) {
-      if (!data.nextPageToken) return;
+      if (!data.nextPageToken) { return; }
       var url = YT.comments_url(
         data.items[0].snippet.videoId, data.nextPageToken);
       var qv_load_more = QuickView.add_load_more();
@@ -282,26 +283,19 @@ var quickview = function() {
         mutations.forEach(function(mutation) {
           if (mutation.type === 'childList') {
             $.each(mutation.addedNodes, function(i, node) {
-              links = get_all_thumbnail_links(node);
-              links.forEach(add_event_listener_to_thumbnail_link);
+              get_all_thumbnail_links(scope).forEach(add_event_listener_to_thumbnail_link);
             })
           }
         })
       });
-
       var config = { attributes: true, childList: true, characterData: true };
-
-      $.each(sectionList, function(i, v) {
-        observer.observe(sectionList[i], config);
-      })
-      $.each(channelsGrid, function(i, v) {
-        observer.observe(channelsGrid[i], config);
-      })
-
+      var _observe = (_, v) => observer.observe(v, config);
+      $.each(sectionList, _observe);
+      $.each(channelsGrid, _observe);
     }
 
     function get_to_work() {
-        links = get_all_thumbnail_links();
+        var links = get_all_thumbnail_links();
         links.forEach(add_event_listener_to_thumbnail_link);
     }
 
@@ -374,5 +368,5 @@ var Formatter = (function() {
 
   return {
     format_comment
-  }
+  };
 }());
