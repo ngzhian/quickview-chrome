@@ -341,33 +341,34 @@ var Formatter = (function() {
     var date = snippet.updatedAt;
     var content = snippet.textDisplay;
     var imgUrl = snippet.authorProfileImageUrl;
-    var comment = '<div class="comment-entry">' +
-      '<div class="comment-item">' +
-      '<a href="' + author_url + '" target="_blank" class="g-hovercard">' +
-      '<img class="user-photo" src="' + imgUrl + '" width="48">' +
-      '</a>' +
-      '<div class="content">' +
-      '<div class="comment-header">' +
-      '<a href="' + author_url + '" class="user-name g-hovercard" target="_blank">' + author + '</a>' +
-      '<span class="spacer"></span>' +
-      '<span class="time">' + form_nice_date(date) + '</span>' +
-      '</div>' +
-      '<div class="comment-text">' +
-      '<div class="comment-text-content">' +
-      content +
-      '</div>' +
-      '</div>' +
-      '<div class="comment-footer">' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '</div>';
+
+
+    var comment =
+      `<div class="comment-entry">
+         <div class="comment-item">
+           <a href="${author_url}" target="_blank" class="g-hovercard">
+             <img class="user-photo" src="${imgUrl}" width="48">
+           </a>
+           <div class="content">
+             <div class="comment-header">
+               <a href="${author_url}" class="user-name g-hovercard" target="_blank">${author}</a>
+               <span class="spacer"></span>
+               <span class="time">${form_nice_date(date)}</span>
+             </div>
+             <div class="comment-text">
+               <div class="comment-text-content">${content}</div>
+               </div>
+               <div class="comment-footer">
+               </div>
+             </div>
+           </div>
+         </div>`;
     return comment;
   }
 
   // date is in the format yyyy-mm-ddThh:mm:ss.000Z
   function form_nice_date(date) {
-      return date.slice(5,10) + " " + date.slice(11,16);
+    return date.slice(5,10) + " " + date.slice(11,16);
   }
 
   return {
