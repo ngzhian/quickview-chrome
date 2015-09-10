@@ -294,9 +294,6 @@ var quickview = function() {
         links.forEach(add_event_listener_to_thumbnail_link);
     }
 
-    /* Helper functions */
-
-
     initialize();
     get_to_work();
     watch_for_new_thumbnails();
@@ -335,35 +332,28 @@ function truncate_div_with_long_text(jQuery_div) {
 
 var Formatter = (function() {
   function format_comment(entry) {
-    var snippet = entry.snippet.topLevelComment.snippet;
-    var author = snippet.authorDisplayName;
-    var author_url = snippet.authorChannelUrl || snippet.authorGoogleplusProfileUrl;
-    var date = snippet.updatedAt;
-    var content = snippet.textDisplay;
-    var imgUrl = snippet.authorProfileImageUrl;
+    var s = entry.snippet.topLevelComment.snippet;
+    var author_url = s.authorChannelUrl || s.authorGoogleplusProfileUrl;
 
-
-    var comment =
-      `<div class="comment-entry">
+    return `<div class="comment-entry">
          <div class="comment-item">
            <a href="${author_url}" target="_blank" class="g-hovercard">
-             <img class="user-photo" src="${imgUrl}" width="48">
+             <img class="user-photo" src="${s.authorProfileImageUrl}" width="48">
            </a>
            <div class="content">
              <div class="comment-header">
-               <a href="${author_url}" class="user-name g-hovercard" target="_blank">${author}</a>
+               <a href="${author_url}" class="user-name g-hovercard" target="_blank">${s.authorDisplayName}</a>
                <span class="spacer"></span>
-               <span class="time">${form_nice_date(date)}</span>
+               <span class="time">${form_nice_date(s.updatedAt)}</span>
              </div>
              <div class="comment-text">
-               <div class="comment-text-content">${content}</div>
+               <div class="comment-text-content">${s.textDisplay}</div>
                </div>
                <div class="comment-footer">
                </div>
              </div>
            </div>
          </div>`;
-    return comment;
   }
 
   // date is in the format yyyy-mm-ddThh:mm:ss.000Z
