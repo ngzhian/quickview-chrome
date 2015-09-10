@@ -188,9 +188,10 @@ var quickview = function() {
     /* Functions to do with retrieving links and adding
      * event listeners */
 
-    function get_all_thumbnail_links() {
+    function get_all_thumbnail_links(scope) {
       // video links have href="/watch?v=[0-0a-zA-Z=]+"
-      var links = $('a[href*="watch?v="]');
+      scope = scope || 'body';
+      var links = $(scope).find('a[href*="watch?v="]');
       var hasThumbnail = (node) => $(node).find('img').length != 0;
       return jQuery.grep(links, hasThumbnail);
     }
@@ -274,19 +275,29 @@ var quickview = function() {
                 get_to_work);
     }
 
-    // Need to manually keep track of number of child nodes to prevent
-    // a bug where it keeps calling get_to_work()
     function watch_for_new_page_load() {
-        var feed_container = $('.feed-container');
-        var num_feed_page = feed_container.find('.feed-page').length;
-        $('.feed-container').on('DOMNodeInserted DOMNodeRemoved',
-                function() {
-                    var new_num_feed_page = feed_container.find('.feed-page').length;
-                    if (new_num_feed_page > num_feed_page) {
-                        get_to_work();
-                    }
-                    num_feed_page = new_num_feed_page;
-                });
+      var channelsGrid = document.getElementsByClassName('channels-browse-content-grid');
+      var sectionList = document.getElementsByClassName('section-list');
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'childList') {
+            $.each(mutation.addedNodes, function(i, node) {
+              links = get_all_thumbnail_links(node);
+              links.forEach(add_event_listener_to_thumbnail_link);
+            })
+          }
+        })
+      });
+
+      var config = { attributes: true, childList: true, characterData: true };
+
+      $.each(sectionList, function(i, v) {
+        observer.observe(sectionList[i], config);
+      })
+      $.each(channelsGrid, function(i, v) {
+        observer.observe(channelsGrid[i], config);
+      })
+
     }
 
     function get_to_work() {
