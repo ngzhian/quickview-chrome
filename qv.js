@@ -76,8 +76,18 @@ var QuickView = (function() {
   var is_big = true;
 
   function init() {
+    add_window_event_listeners();
     qv_size_toggle.click(expand_or_contract);
     make_qv_bar_draggable();
+  }
+
+  function add_window_event_listeners() {
+    var doc = $(document);
+    doc.click(e => {
+      if (QuickView.contains_element(e.target)) { return; }
+      QuickView.reset_all();
+    })
+    doc.keypress(QuickView.reset_all);
   }
 
   function make_qv_bar_draggable() {
@@ -166,15 +176,20 @@ var QuickView = (function() {
     truncate_div_with_long_text(qv_desc);
   }
 
+  function contains_element(el) {
+    return jQuery.contains(qv[0], el);
+  }
+
   return {
-    init: init,
-    reset_qv_comments: reset_qv_comments,
-    reset_all: reset_all,
-    set_comments: set_comments,
-    add_load_more: add_load_more,
-    is_showing: is_showing,
-    show_video: show_video,
-    set_info: set_info
+    init,
+    reset_qv_comments,
+    reset_all,
+    set_comments,
+    add_load_more,
+    is_showing,
+    show_video,
+    set_info,
+    contains_element
   }
 })();
 
@@ -183,7 +198,12 @@ var quickview = function() {
     /* Function that initializes stuff */
     function initialize() {
         QuickView.init();
-        add_window_event_listeners();
+        linkThumbnails();
+    }
+
+    function linkThumbnails(node) {
+        var links = get_all_thumbnail_links(node);
+        links.forEach(addHoverIntent);
     }
 
     /* Functions to do with retrieving links and adding
@@ -197,7 +217,7 @@ var quickview = function() {
       return jQuery.grep(links, hasThumbnail);
     }
 
-    function add_event_listener_to_thumbnail_link(link) {
+    function addHoverIntent(link) {
       $(link).find('img').hoverIntent({
         over: () => show_qv(link),
         out: jQuery.noop,
@@ -241,66 +261,22 @@ var quickview = function() {
     /* Functions that maintains quickview behavior
      * e.g. when new thumbnails or page loads */
 
-    function add_window_event_listeners() {
-        $(document).click(clears_qv_on_click)
-            .keypress(clears_qv_on_keypress);
-    }
-
-    function clears_qv_on_click(click_event) {
-        if (click_is_not_in_qv(click_event)) {
-            QuickView.reset_all();
-        }
-    }
-
-    function click_is_not_in_qv(click_event) {
-        return !jQuery.contains($('#qv')[0], click_event.target);
-    }
-
-    function clears_qv_on_keypress(keypress_event) {
-      QuickView.reset_all();
-    }
-
     function watch_for_new_thumbnails() {
-        watch_for_new_page_load();
-        watch_for_load_more_at_channel_page();
-        watch_for_watch_more_related_at_video_page();
-    }
-
-    function watch_for_load_more_at_channel_page() {
-        $('.feed-list-container').on('DOMNodeInserted DOMNodeRemoved',
-                get_to_work);
-    }
-
-    function watch_for_watch_more_related_at_video_page() {
-        $('#watch-more-related').on('DOMNodeInserted DOMNodeRemoved',
-                get_to_work);
-    }
-
-    function watch_for_new_page_load() {
-      var channelsGrid = document.getElementsByClassName('channels-browse-content-grid');
-      var sectionList = document.getElementsByClassName('section-list');
       var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.type === 'childList') {
-            $.each(mutation.addedNodes, function(i, node) {
-              get_all_thumbnail_links(scope).forEach(add_event_listener_to_thumbnail_link);
-            })
-          }
-        })
+        mutations.filter(m => m.type === 'childList')
+                 .map(m => m.addedNodes)
+                 .reduce((p, n) => p.concat(n), [])
+                 .forEach(linkThumbnails)
       });
       var config = { attributes: true, childList: true, characterData: true };
       var _observe = (_, v) => observer.observe(v, config);
-      $.each(sectionList, _observe);
-      $.each(channelsGrid, _observe);
-    }
 
-    function get_to_work() {
-        var links = get_all_thumbnail_links();
-        links.forEach(add_event_listener_to_thumbnail_link);
+      $('.channels-browse-content-grid').each(_observe);
+      $('.section-list').each(_observe);
+      $('#watch-more-related').each(_observe);
     }
 
     initialize();
-    get_to_work();
     watch_for_new_thumbnails();
 }();
 
