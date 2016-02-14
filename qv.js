@@ -8,6 +8,7 @@ var YT = (function() {
   var VIDEO_PARTS = '&part=snippet,statistics';
   var COMMENTS_URL = YT_BASE_URL + 'commentThreads?videoId=';
   var COMMENTS_PARTS = '&part=id,replies,snippet';
+  var COMMENTS_TEXTFORMAT = '&textFormat=plainText';
   var EMBED_URL = 'https://www.youtube.com/embed/';
   var EMBED_QUERY = '?autoplay=1';
 
@@ -24,7 +25,7 @@ var YT = (function() {
   }
 
   function comments_url(video_id, pageToken) {
-    var url = COMMENTS_URL + video_id + '&key=' + API_KEY + COMMENTS_PARTS;
+    var url = COMMENTS_URL + video_id + '&key=' + API_KEY + COMMENTS_PARTS + COMMENTS_TEXTFORMAT;
     if (pageToken) { url += '&pageToken=' + pageToken; }
     return url;
   }
