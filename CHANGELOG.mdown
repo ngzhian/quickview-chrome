@@ -1,3 +1,19 @@
+2.2.0 (2016-07-12)
+==================
+
+* Download youtube lib to interact with iframe player
+* Add options page and allow setting playback rate
+
+2.1.1 (2016-02-14)
+==================
+
+* Temp fix for comments text not showing up: https://code.google.com/p/gdata-issues/issues/detail?id=7969
+
+2.1.0 (2015-09-10)
+==================
+
+* Code cleanup, use new es6 features, not much visible changes for the user
+
 2.0.2 (2015-08-08)
 ==================
 
