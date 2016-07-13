@@ -84,6 +84,18 @@
     content:"+";
 }
 
+#qv-options-link {
+    display: inline-block;
+    float: right;
+    margin-top: 5px;
+    margin-right: 5px;
+    background: no-repeat url(//s.ytimg.com/yts/imgbin/www-hitchhiker-2x-vflDvab3L.webp) -347px -66px;
+    width: 20px;
+    height: 20px;
+    background-size: 419px 399px;
+    -webkit-filter: invert();
+}
+
 .hide-toggle:before {
     content:"Hide " attr(data-for);
 }
