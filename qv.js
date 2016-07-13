@@ -10,7 +10,7 @@ var QuickViewYT = (function() {
   var COMMENTS_PARTS = '&part=id,replies,snippet';
   var COMMENTS_TEXTFORMAT = '&textFormat=plainText';
   var EMBED_URL = 'https://www.youtube.com/embed/';
-  var EMBED_QUERY = '?autoplay=1';
+  var EMBED_QUERY = '?autoplay=1&enablejsapi=1';
 
   // example url: https://www.youtube.com/watch?v=MCaw6fv8ZxA
   // regex to use: v(\=|\/)(\w*)
