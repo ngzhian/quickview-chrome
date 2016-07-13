@@ -73,6 +73,8 @@ var QuickView = (function() {
     '<div id="qv-bar">' +
     '<h2 id="qv-qv"><a href="' + qv_url + '">Quickview</a></h2>' +
     '<a id="qv-size-toggle"></a>' +
+    // not used yet
+    // '<a id="qv-options-link"></a>' +
     '</div>' +
     '<div id="qv-info" class="yt-card yt-card-has-padding">' +
     '<h1 id="qv-title"></h1>' +
@@ -90,6 +92,7 @@ var QuickView = (function() {
   var qv_side = qv.find('#qv-side');
   var qv_bar = qv_side.find('#qv-bar');
   var qv_size_toggle = qv_bar.find('#qv-size-toggle');
+  // var qv_options_link = qv_bar.find('#qv-options-link');
   var qv_info = qv_side.find('#qv-info');
   var qv_title = qv_side.find('#qv-title');
   var qv_desc = qv_side.find('#qv-desc');
@@ -99,9 +102,20 @@ var QuickView = (function() {
   var showing_id = null;
   var is_big = true;
 
+  // not used yet, we can't call this from the content script,
+  // need a background script to handle message passing
+  function openOptionsPage() {
+    if (chrome.runtime.openOptionsPage) {
+      chrome.runtime.openOptionsPage();
+    } else {
+      window.open(chrome.runtime.getURL('options.html'));
+    }
+  }
+
   function init() {
     add_window_event_listeners();
     qv_size_toggle.click(expand_or_contract);
+    // qv_options_link.click(openOptionsPage);
     make_qv_bar_draggable();
   }
 
