@@ -1,5 +1,28 @@
 "use strict";
 /*eslint eqeqeq:0, curly: 2*/
+
+// stuff related to controlling the embedded iframe
+// https://developers.google.com/youtube/iframe_api_reference
+var player;
+// this needs to live here because the lib that we loads relies on
+// this method existing in the scope
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('qv-iframe', {
+    events: {
+      'onReady': onPlayerReady,
+    }
+  });
+}
+
+// when the player is ready we set the playbackRate to user's preference
+function onPlayerReady(event) {
+  chrome.storage.sync.get({
+    playbackRate: '1'
+  }, function(items) {
+    player.setPlaybackRate(items.playbackRate);
+  })
+}
+
 // Simple object to help manage getting URLs to make API calls to YouTube
 var QuickViewYT = (function() {
   var API_KEY = 'AIzaSyAJgu87-5TWOeMtKHOnaiJXIhQtUlQSlRw';
