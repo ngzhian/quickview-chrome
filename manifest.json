@@ -13,5 +13,12 @@
         "js": ["lib/jquery-1.9.1.min.js", "lib/hoverIntent.min.js", "lib/jquery-ui-1.10.2.custom.js", "qv.js", "lib/youtubewidgetapi.js"],
         "run_at": "document_end"
     }
+    ],
+    "options_ui": {
+        "page": "options.html",
+        "chrome_style": true
+    },
+    "permissions": [
+        "storage"
     ]
 }
