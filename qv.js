@@ -1,7 +1,7 @@
 "use strict";
 /*eslint eqeqeq:0, curly: 2*/
 // Simple object to help manage getting URLs to make API calls to YouTube
-var YT = (function() {
+var QuickViewYT = (function() {
   var API_KEY = 'AIzaSyAJgu87-5TWOeMtKHOnaiJXIhQtUlQSlRw';
   var YT_BASE_URL = 'https://www.googleapis.com/youtube/v3/';
   var VIDEO_URL = YT_BASE_URL + 'videos?id=';
@@ -166,7 +166,7 @@ var QuickView = (function() {
 
   function show_video(video_id) {
     if (is_showing(null)) { expand() };
-    iframe.attr('src', YT.embed_url(video_id));
+    iframe.attr('src', QuickViewYT.embed_url(video_id));
     showing_id = video_id;
   }
 
@@ -230,12 +230,12 @@ var quickview = function() {
 
     // Takes a <a> tag with href to a YouTube url and pops up qv
     function show_qv(video_link) {
-      var video_id = YT.video_id_from_link(video_link);
+      var video_id = QuickViewYT.video_id_from_link(video_link);
       if (QuickView.is_showing(video_id)) { return; }
 
       QuickView.show_video(video_id);
-      $.get(YT.video_url(video_id)).done(add_info);
-      $.get(YT.comments_url(video_id)).done(add_comments);
+      $.get(QuickViewYT.video_url(video_id)).done(add_info);
+      $.get(QuickViewYT.comments_url(video_id)).done(add_comments);
     }
 
     function add_info(data) {
@@ -250,7 +250,7 @@ var quickview = function() {
 
     function add_load_more_button(data) {
       if (!data.nextPageToken) { return; }
-      var url = YT.comments_url(
+      var url = QuickViewYT.comments_url(
         data.items[0].snippet.videoId, data.nextPageToken);
       var qv_load_more = QuickView.add_load_more();
       qv_load_more.click(function(e) {
