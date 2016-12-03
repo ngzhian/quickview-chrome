@@ -78,6 +78,11 @@ var QuickView = (function() {
     '</div>' +
     '<div id="qv-info" class="yt-card yt-card-has-padding">' +
     '<h1 id="qv-title"></h1>' +
+    '<div id="qv-statistics">' +
+    '<span id="qv-view-count" class="watch-view-count"></span> views' +
+    '<span id="qv-like-count" class="yt-uix-button yt-uix-button-size-default yt-uix-button-opacity yt-uix-button-has-icon no-icon-markup like-button-renderer-like-button like-button-renderer-like-button-unclicked  yt-uix-post-anchor yt-uix-tooltip"></span>' +
+    '<span id="qv-dislike-count" class="yt-uix-button yt-uix-button-size-default yt-uix-button-opacity yt-uix-button-has-icon no-icon-markup like-button-renderer-dislike-button like-button-renderer-dislike-button-unclicked  yt-uix-post-anchor yt-uix-tooltip"></span>' +
+    '</div>' +
     '<div id="qv-desc"></div>' +
     '</div>' +
     '<div class="yt-card yt-card-has-padding">' +
@@ -96,6 +101,9 @@ var QuickView = (function() {
   var qv_info = qv_side.find('#qv-info');
   var qv_title = qv_side.find('#qv-title');
   var qv_desc = qv_side.find('#qv-desc');
+  var qv_view_count = qv_side.find('#qv-view-count');
+  var qv_like_count = qv_side.find('#qv-like-count');
+  var qv_dislike_count = qv_side.find('#qv-dislike-count');
   var qv_comments = qv_side.find('#qv-comments');
   // attributes needed for functions
   var video_id = null;
@@ -214,6 +222,12 @@ var QuickView = (function() {
     truncate_div_with_long_text(qv_desc);
   }
 
+  function set_statistics(view_count, like_count, dislike_count) {
+    qv_view_count.text(view_count)
+    qv_like_count.text(like_count)
+    qv_dislike_count.text(dislike_count)
+  }
+
   function contains_element(el) {
     return jQuery.contains(qv[0], el);
   }
@@ -227,6 +241,7 @@ var QuickView = (function() {
     is_showing,
     show_video,
     set_info,
+    set_statistics,
     contains_element
   }
 })();
@@ -288,6 +303,8 @@ var quickview = function() {
     function add_info(data) {
       var snippet = data.items[0].snippet
       QuickView.set_info(snippet.title, snippet.description);
+      const stats = data.items[0].statistics
+      QuickView.set_statistics(stats.viewCount, stats.likeCount, stats.dislikeCount)
     }
 
     function add_comments(api_data) {
