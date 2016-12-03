@@ -236,12 +236,22 @@ var quickview = function() {
     /* Function that initializes stuff */
     function initialize() {
         QuickView.init();
-        linkThumbnails();
+        getConfiguredHoverTime((hoverTime) => {
+            linkThumbnails('body', hoverTime);
+        })
     }
 
-    function linkThumbnails(node) {
+    function getConfiguredHoverTime(callback) {
+        chrome.storage.sync.get({
+            hoverTime: '370'
+        }, function(items) {
+            callback(parseInt(items.hoverTime, 10))
+        })
+    }
+
+    function linkThumbnails(node, hoverTime) {
         var links = get_all_thumbnail_links(node);
-        links.forEach(addHoverIntent);
+        links.forEach(l => addHoverIntent(l, hoverTime));
     }
 
     /* Functions to do with retrieving links and adding
@@ -255,11 +265,11 @@ var quickview = function() {
       return jQuery.grep(links, hasThumbnail);
     }
 
-    function addHoverIntent(link) {
+    function addHoverIntent(link, hoverTime = 370) {
       $(link).find('img').hoverIntent({
         over: () => show_qv(link),
         out: jQuery.noop,
-        interval: 370,
+        interval: hoverTime,
       });
     }
 
