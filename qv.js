@@ -65,30 +65,35 @@ var QuickViewYT = (function() {
   }
 }());
 
+const YT_LIKE_BUTTON_CLASS_LIST = 'yt-uix-button yt-uix-button-size-default yt-uix-button-opacity yt-uix-button-has-icon no-icon-markup like-button-renderer-like-button like-button-renderer-like-button-unclicked  yt-uix-post-anchor yt-uix-tooltip'
+const YT_DISLIKE_BUTTON_CLASS_LIST = 'yt-uix-button yt-uix-button-size-default yt-uix-button-opacity yt-uix-button-has-icon no-icon-markup like-button-renderer-dislike-button like-button-renderer-dislike-button-unclicked  yt-uix-post-anchor yt-uix-tooltip'
+
 var QuickView = (function() {
-  var qv_url = '#';
-  var html = '<div id="qv">' +
-    '<iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe>' +
-    '<div id="qv-side">' +
-    '<div id="qv-bar">' +
-    '<h2 id="qv-qv"><a href="' + qv_url + '">Quickview</a></h2>' +
-    '<a id="qv-size-toggle"></a>' +
-    // not used yet
-    // '<a id="qv-options-link"></a>' +
-    '</div>' +
-    '<div id="qv-info" class="yt-card yt-card-has-padding">' +
-    '<h1 id="qv-title"></h1>' +
-    '<div id="qv-statistics">' +
-    '<span id="qv-view-count" class="watch-view-count"></span> views' +
-    '<span id="qv-like-count" class="yt-uix-button yt-uix-button-size-default yt-uix-button-opacity yt-uix-button-has-icon no-icon-markup like-button-renderer-like-button like-button-renderer-like-button-unclicked  yt-uix-post-anchor yt-uix-tooltip"></span>' +
-    '<span id="qv-dislike-count" class="yt-uix-button yt-uix-button-size-default yt-uix-button-opacity yt-uix-button-has-icon no-icon-markup like-button-renderer-dislike-button like-button-renderer-dislike-button-unclicked  yt-uix-post-anchor yt-uix-tooltip"></span>' +
-    '</div>' +
-    '<div id="qv-desc"></div>' +
-    '</div>' +
-    '<div class="yt-card yt-card-has-padding">' +
-    '<div id="qv-comments" class="comments"></div>' +
-    '</div>' +
-    '</div></div>';
+  // not used yet
+  // '<a id="qv-options-link"></a>' +
+
+  const html = `
+    <div id="qv">
+      <iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe>
+      <div id="qv-side">
+        <div id="qv-bar">
+          <h2 id="qv-qv"><a href="#">Quickview</a></h2>
+          <a id="qv-size-toggle"></a>
+        </div>
+        <div id="qv-info" class="yt-card yt-card-has-padding">
+          <h1 id="qv-title"></h1>
+          <div id="qv-statistics">
+            <span id="qv-view-count" class="watch-view-count"></span> views
+            <span id="qv-like-count" class="${YT_LIKE_BUTTON_CLASS_LIST}"></span>
+            <span id="qv-dislike-count" class="${YT_DISLIKE_BUTTON_CLASS_LIST}"></span>
+          </div>
+          <div id="qv-desc"></div>
+        </div>
+        <div class="yt-card yt-card-has-padding">
+          <div id="qv-comments" class="comments"></div>
+        </div>
+      </div>
+    </div>`;
 
   var body = $('body').append(html);
   // references to DOM elements
