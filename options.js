@@ -6,14 +6,13 @@ const hoverTimeControl = document.getElementById('hover-time');
 const resetControl = document.getElementById('reset-to-default');
 const status = document.getElementById('status');
 
-
 function save_options() {
   chrome.storage.sync.set({
     playbackRate: playbackRateControl.value,
     hoverTime: hoverTimeControl.value,
   }, function() {
     // Update status to let user know options were saved.
-    status.textContent = 'Options saved.';
+    status.textContent = 'Options saved!';
     setTimeout(function() {
       status.textContent = '';
     }, 750);
@@ -36,7 +35,11 @@ function reset_and_save() {
   save_options();
 }
 
+function submit(e) {
+  e.preventDefault();
+  save_options();
+}
+
 document.addEventListener('DOMContentLoaded', restore_options);
-document.getElementById('save').addEventListener('click',
-    save_options);
 document.getElementById('reset-to-default').addEventListener('click', reset_and_save);
+document.getElementById('options-form').addEventListener('submit', submit);
