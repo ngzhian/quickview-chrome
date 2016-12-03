@@ -8,17 +8,33 @@
 </head>
 
 <body>
-  Default playback rate:
-  <select id="playback-rate">
-   <option value="0.25">0.25</option>
-   <option value="0.5">0.5</option>
-   <option value="1" selected="selected">1</option>
-   <option value="1.25">1.25</option>
-   <option value="1.5">1.5</option>
-   <option value="2">2</option>
-  </select>
+  <div>
+    <label for="playback-rate">
+      Playback rate:
+    </label>
+    <select id="playback-rate">
+     <option value="0.25">0.25</option>
+     <option value="0.5">0.5</option>
+     <option value="1" selected="selected">1</option>
+     <option value="1.25">1.25</option>
+     <option value="1.5">1.5</option>
+     <option value="2">2</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="hover-time">
+      Hover delay:
+    </label>
+    <input type="number" name="hover-time" id="hover-time" value="370" />ms
+
+  </div>
 
   <div id="status"></div>
+
+  <button id="reset-to-default" value="Reset to Default">
+    Reset to default
+  </button>
   <button id="save">Save</button>
 
   <script src="options.js"></script>
