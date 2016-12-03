@@ -1,6 +1,8 @@
 Quickview
 =========
 
+[Chrome Web Store link](https://chrome.google.com/webstore/detail/quickview-for-youtube/jfocolikmfgljlbblhgpkcjlpehnapkm)
+
 Watch videos without leaving your YouTube subscriptions feed page, and possibly without ever clicking.
 
 ##What?

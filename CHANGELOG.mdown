@@ -1,3 +1,9 @@
+2.3.0 (2016-12-03)
+==================
+
+* Add option for user to set hover time (how long the pointer has to stay above the thumbnail to trigger Quickview)
+* Show view count, like count, dislike count
+
 2.2.0 (2016-07-12)
 ==================
 
