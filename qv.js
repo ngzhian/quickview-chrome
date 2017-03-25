@@ -69,9 +69,6 @@ const YT_LIKE_BUTTON_CLASS_LIST = 'yt-uix-button yt-uix-button-size-default yt-u
 const YT_DISLIKE_BUTTON_CLASS_LIST = 'yt-uix-button yt-uix-button-size-default yt-uix-button-opacity yt-uix-button-has-icon no-icon-markup like-button-renderer-dislike-button like-button-renderer-dislike-button-unclicked  yt-uix-post-anchor yt-uix-tooltip'
 
 var QuickView = (function() {
-  // not used yet
-  // '<a id="qv-options-link"></a>' +
-
   const html = `
     <div id="qv">
       <iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe>
@@ -80,16 +77,15 @@ var QuickView = (function() {
           <h2 id="qv-qv"><a href="#">Quickview</a></h2>
           <a id="qv-size-toggle"></a>
         </div>
-        <div id="qv-info" class="yt-card yt-card-has-padding">
-          <h1 id="qv-title"></h1>
-          <div id="qv-statistics">
-            <span id="qv-view-count" class="watch-view-count"></span> views
-            <span id="qv-like-count" class="${YT_LIKE_BUTTON_CLASS_LIST}"></span>
-            <span id="qv-dislike-count" class="${YT_DISLIKE_BUTTON_CLASS_LIST}"></span>
+        <div id="qv-body" style="margin: 0 10px 0 10px">
+          <div id="qv-info" class="style-scope ytd-watch">
+            <ytd-video-primary-info-renderer class="style-scope ytd-watch">
+            </ytd-video-primary-info-renderer>
           </div>
-          <div id="qv-desc"></div>
-        </div>
-        <div class="yt-card yt-card-has-padding">
+          <div id="qv-meta" class="style-scope ytd-watch">
+            <ytd-video-secondary-info-renderer class="style-scope ytd-watch">
+            </ytd-video-secondary-info-renderer>
+          </div>
           <div id="qv-comments" class="comments"></div>
         </div>
       </div>
@@ -98,17 +94,13 @@ var QuickView = (function() {
   var body = $('body').append(html);
   // references to DOM elements
   var qv = body.find('#qv');
+  var qv_info = qv.find('#qv-info')[0];
+  var qv_meta = qv.find('#qv-meta')[0];
   var iframe = qv.find('iframe'); // iframe node itself
   var qv_side = qv.find('#qv-side');
   var qv_bar = qv_side.find('#qv-bar');
   var qv_size_toggle = qv_bar.find('#qv-size-toggle');
-  // var qv_options_link = qv_bar.find('#qv-options-link');
-  var qv_info = qv_side.find('#qv-info');
-  var qv_title = qv_side.find('#qv-title');
-  var qv_desc = qv_side.find('#qv-desc');
-  var qv_view_count = qv_side.find('#qv-view-count');
-  var qv_like_count = qv_side.find('#qv-like-count');
-  var qv_dislike_count = qv_side.find('#qv-dislike-count');
+  var qv_body = qv_side.find('#qv-body');
   var qv_comments = qv_side.find('#qv-comments');
   // attributes needed for functions
   var video_id = null;
@@ -176,9 +168,7 @@ var QuickView = (function() {
   }
 
   /* reset QuickView */
-  function reset_qv_info() {
-    qv_title.empty();
-    qv_desc.empty();
+  function reset_qv_body() {
   }
 
   function reset_qv() {
@@ -220,19 +210,6 @@ var QuickView = (function() {
     showing_id = video_id;
   }
 
-  function set_info(title, desc) {
-    reset_qv_info();
-    qv_title.text(title);
-    qv_desc.append(desc.replace(/\n/g, '<br>'));
-    truncate_div_with_long_text(qv_desc);
-  }
-
-  function set_statistics(view_count, like_count, dislike_count) {
-    qv_view_count.text(view_count)
-    qv_like_count.text(like_count)
-    qv_dislike_count.text(dislike_count)
-  }
-
   function contains_element(el) {
     return jQuery.contains(qv[0], el);
   }
@@ -245,9 +222,9 @@ var QuickView = (function() {
     add_load_more,
     is_showing,
     show_video,
-    set_info,
-    set_statistics,
-    contains_element
+    contains_element,
+    qv_info,
+    qv_meta,
   }
 })();
 
@@ -297,19 +274,49 @@ var quickview = function() {
 
     // Takes a <a> tag with href to a YouTube url and pops up qv
     function show_qv(video_link) {
+      console.log('showing qv')
       var video_id = QuickViewYT.video_id_from_link(video_link);
       if (QuickView.is_showing(video_id)) { return; }
 
       QuickView.show_video(video_id);
       $.get(QuickViewYT.video_url(video_id)).done(add_info);
+      // handle 403
+      QuickView.reset_qv_comments()
       $.get(QuickViewYT.comments_url(video_id)).done(add_comments);
     }
 
     function add_info(data) {
-      var snippet = data.items[0].snippet
-      QuickView.set_info(snippet.title, snippet.description);
+      add_qv_yt(data)
+      add_qv_meta(data)
+    }
+
+    function add_qv_yt(data) {
+      const info = QuickView.qv_info
+
+      const snippet = data.items[0].snippet
       const stats = data.items[0].statistics
-      QuickView.set_statistics(stats.viewCount, stats.likeCount, stats.dislikeCount)
+
+      let viewCount = info.querySelector('#count')
+      viewCount.innerHTML = `<yt-view-count-renderer></yt-view-count-renderer>`
+      viewCount.querySelector('.view-count').textContent = `${stats.viewCount} views`
+
+      info.querySelector('h1').textContent = snippet.title
+      const menuCont = info.querySelector('#menu-container')
+      if (menuCont) { menuCont.remove() }
+    }
+
+    function add_qv_meta(data) {
+      const meta = QuickView.qv_meta
+      const snippet = data.items[0].snippet
+
+      meta.querySelector('#description').textContent = snippet.description
+      meta.querySelector('.less-button').textContent = 'SHOW LESS'
+      meta.querySelector('.more-button').textContent = 'SHOW MORE'
+      meta.querySelector('.description').style.margin = 0
+
+      // remove first, might implement this next time
+      const topRow = meta.querySelector('#top-row')
+      if (topRow) { topRow.remove() }
     }
 
     function add_comments(api_data) {
@@ -350,61 +357,27 @@ var quickview = function() {
     watch_for_new_thumbnails();
 }();
 
-function truncate_div_with_long_text(jQuery_div) {
-    // splits the div in to 3 parts, summary, details and toggle
-    var html = jQuery_div[0].innerHTML;
-    var text = jQuery_div.text(),
-        threshold = 350, // characters
-        split_point = 300, // characters
-        html,
-        truncate_toggle,
-        details;
-    if (html.length > threshold) {
-        html = [
-            '<span class="summary">',
-            html.substring(0, split_point),
-            '</span>',
-            '<span class="details hidden">',
-            html.substring(split_point),
-            '</span>',
-            '<div class="truncate-button">',
-            '<a class="truncate hidden"></a>',
-            '</div>'
-            ].join('');
-        jQuery_div.html(html);
-        truncate_toggle = jQuery_div.find('a.truncate'),
-        truncate_toggle.click(function(e) {
-            details = truncate_toggle.parent().siblings('span.details');
-            details.toggleClass('hidden');
-            truncate_toggle.toggleClass('hidden');
-        });
-    }
-}
-
 var Formatter = (function() {
   function format_comment(entry) {
     var s = entry.snippet.topLevelComment.snippet;
     var author_url = s.authorChannelUrl || s.authorGoogleplusProfileUrl;
 
-    return `<div class="comment-entry">
-         <div class="comment-item">
-           <a href="${author_url}" target="_blank" class="g-hovercard">
-             <img class="user-photo" src="${s.authorProfileImageUrl}" width="48">
-           </a>
-           <div class="content">
-             <div class="comment-header">
-               <a href="${author_url}" class="user-name g-hovercard" target="_blank">${s.authorDisplayName}</a>
-               <span class="spacer"></span>
-               <span class="time">${form_nice_date(s.updatedAt)}</span>
-             </div>
-             <div class="comment-text">
-               <div class="comment-text-content">${s.textDisplay}</div>
-               </div>
-               <div class="comment-footer">
-               </div>
-             </div>
-           </div>
-         </div>`;
+    let ytdCommentRenderer = document.createElement('ytd-comment-renderer')
+    ytdCommentRenderer.classList.add('style-scope')
+    ytdCommentRenderer.classList.add('ytd-comment-thread-renderer')
+    let img = ytdCommentRenderer.querySelector('img')
+    img.setAttribute('alt', 'someone said')
+    img.setAttribute('src', s.authorProfileImageUrl)
+
+    let authorName = ytdCommentRenderer.querySelector('a#name')
+    authorName.setAttribute('href', author_url)
+    authorName.querySelector('span').textContent = s.authorDisplayName
+
+    ytdCommentRenderer.querySelector('#content yt-formatted-string').textContent = s.textDisplay
+    let niceDate = form_nice_date(s.updatedAt)
+    ytdCommentRenderer.querySelector('.main .header yt-formatted-string').textContent = niceDate
+
+    return ytdCommentRenderer
   }
 
   // date is in the format yyyy-mm-ddThh:mm:ss.000Z
