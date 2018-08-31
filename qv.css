@@ -49,7 +49,7 @@
 
 #qv-bar {
     width: 100%;
-    height: 30px;
+    /* height: 30px; */
     background: #af2b26;
     line-height: 30px;
     color: #EEEEEE
@@ -61,6 +61,10 @@
 
 #qv-side a:hover {
     text-decoration: underline;
+}
+
+#qv-info {
+    margin-left: 12px;
 }
 
 #qv-qv {
@@ -96,4 +100,48 @@
     height: 20px;
     background-size: 419px 399px;
     -webkit-filter: invert();
+}
+
+.hide-toggle:before {
+    content:"Hide " attr(data-for);
+}
+
+.hide-toggle.hidden:before {
+    content:"Show " attr(data-for);
+}
+
+#qv-side .truncate-button {
+    margin-top: 10px;
+    text-align: center;
+    border-top: 1px solid #e2e2e2;
+    /* margin-bottom: -15px; */
+}
+
+#qv-side .truncate-button a.truncate {
+    text-transform: uppercase;
+    display: inline-block;
+    line-height: 25px;
+    color: #767676;
+}
+
+#qv-side .truncate-button a.truncate:hover {
+    color: #222;
+    text-decoration: none;
+}
+
+#qv-side .truncate-button a.truncate:before {
+    content: "Show less";
+}
+
+
+#qv-side .truncate-button a.truncate.hidden:before {
+    content: "Show more";
+}
+
+#qv-side span.details.hidden {
+    display: none;
+}
+
+#qv-side span.details {
+    display: inline;
 }
