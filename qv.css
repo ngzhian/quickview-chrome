@@ -48,11 +48,13 @@
 }
 
 #qv-bar {
+    box-sizing: border-box;
     width: 100%;
     /* height: 30px; */
     background: #af2b26;
     line-height: 30px;
-    color: #EEEEEE
+    color: #EEEEEE;
+    padding-left: 12px;
 }
 
 #qv-bar a {
@@ -65,11 +67,6 @@
 
 #qv-info {
     margin-left: 12px;
-}
-
-#qv-qv {
-    padding-left: 0.75em;
-    display: inline-block;
 }
 
 #qv-title {
@@ -144,4 +141,23 @@
 
 #qv-side span.details {
     display: inline;
+}
+
+.qv-stats {
+    font-size: 1.6rem;
+}
+
+.qv-yt-icon {
+    width: 20px;
+    height: 20px;
+    border: none;
+    margin: 0;
+    padding: 0;
+    background: none;
+    vertical-align: text-bottom;
+    font-size: 1.6rem;
+}
+
+.qv-summary {
+    font-size: 1.4rem;
 }

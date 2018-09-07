@@ -23,6 +23,23 @@ function onPlayerReady(event) {
   })
 }
 
+const like_icon_svg = `
+  <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false">
+    <g>
+      <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z">
+      </path>
+    </g>
+  </svg>`;
+
+var dislike_icon_svg = `
+  <svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false">
+    <g>
+      <path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v1.91l.01.01L1 14c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z">
+      </path>
+    </g>
+  </svg>`;
+
+
 // Simple object to help manage getting URLs to make API calls to YouTube
 var QuickViewYT = (function() {
   var API_KEY = 'AIzaSyAJgu87-5TWOeMtKHOnaiJXIhQtUlQSlRw';
@@ -65,27 +82,23 @@ var QuickViewYT = (function() {
   }
 }());
 
-const YT_LIKE_BUTTON_CLASS_LIST = 'yt-uix-button yt-uix-button-size-default yt-uix-button-opacity yt-uix-button-has-icon no-icon-markup like-button-renderer-like-button like-button-renderer-like-button-unclicked  yt-uix-post-anchor yt-uix-tooltip'
-const YT_DISLIKE_BUTTON_CLASS_LIST = 'yt-uix-button yt-uix-button-size-default yt-uix-button-opacity yt-uix-button-has-icon no-icon-markup like-button-renderer-dislike-button like-button-renderer-dislike-button-unclicked  yt-uix-post-anchor yt-uix-tooltip'
-
 var QuickView = (function() {
   const html = `
     <div id="qv">
       <iframe id="qv-iframe" width="0" height="0" src="" frameborder="0" allowfullscreen=""></iframe>
       <div id="qv-side">
         <div id="qv-bar">
-          <h2 id="qv-qv"><a href="#">Quickview</a></h2>
+          <span id="qv-qv">Quickview</span>
           <a id="qv-size-toggle"></a>
         </div>
         <div id="qv-info" class="yt-card yt-card-has-padding">
           <h1 id="qv-title"></h1>
-          <div id="qv-statistics">
-            <span id="qv-view-count" class="watch-view-count"></span> views
-            <span id="qv-like-count" class="${YT_LIKE_BUTTON_CLASS_LIST}"></span>
-            <span id="qv-dislike-count" class="${YT_DISLIKE_BUTTON_CLASS_LIST}"></span>
-            <div id="qv-desc"></div>
-          </div>
-        <div class="">
+          <span class="qv-view-count qv-stats"></span>
+          <span id="qv-like-count" class="qv-stats"></span>
+          <button id="qv-like-icon" class="qv-yt-icon"></button>
+          <span id="qv-dislike-count" class="qv-stats"></span>
+          <button id="qv-dislike-icon" class="qv-yt-icon"></button>
+          <div id="qv-desc"></div>
           <div id="qv-comments" class="comments"></div>
         </div>
       </div>
@@ -98,9 +111,11 @@ var QuickView = (function() {
   var qv_info = qv.find('#qv-info')[0];
   var qv_title = qv_side.find('#qv-title');
   var qv_desc = qv_side.find('#qv-desc');
-  var qv_view_count = qv_side.find('#qv-view-count');
+  var qv_view_count = qv_side.find('span.qv-view-count');
   var qv_like_count = qv_side.find('#qv-like-count');
+  var qv_like_icon = qv_side.find('#qv-like-icon');
   var qv_dislike_count = qv_side.find('#qv-dislike-count');
+  var qv_dislike_icon = qv_side.find('#qv-dislike-icon');
   var iframe = qv.find('iframe'); // iframe node itself
   var qv_bar = qv_side.find('#qv-bar');
   var qv_size_toggle = qv_bar.find('#qv-size-toggle');
@@ -223,9 +238,11 @@ var QuickView = (function() {
   }
 
   function set_statistics(view_count, like_count, dislike_count) {
-    qv_view_count.text(view_count)
+    qv_view_count.text(`${view_count} views`)
     qv_like_count.text(like_count)
+    qv_like_icon.append(like_icon_svg)
     qv_dislike_count.text(dislike_count)
+    qv_dislike_icon.append(dislike_icon_svg)
   }
 
   function contains_element(el) {
@@ -257,6 +274,7 @@ var quickview = function() {
     }
 
     function getConfiguredHoverTime(callback) {
+        if (chrome.storage === undefined) return;
         chrome.storage.sync.get({
             hoverTime: '370'
         }, function(items) {
@@ -378,6 +396,8 @@ var quickview = function() {
 
     initialize();
     watch_for_new_thumbnails();
+    window.qv_show_qv = show_qv;
+    window.qv_add_info = add_info;
 }();
 
 function truncate_div_with_long_text(jQuery_div) {
@@ -391,7 +411,7 @@ function truncate_div_with_long_text(jQuery_div) {
         details;
     if (html.length > threshold) {
         html = [
-            '<span class="summary">',
+            '<span class="qv-summary">',
             html.substring(0, split_point),
             '</span>',
             '<span class="details hidden">',
