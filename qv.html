@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link rel="stylesheet" href="qv.css" type="text/css" media="all" />
+  </head>
+  <body>
+  </body>
+  <script src="lib/jquery-1.9.1.min.js"></script>
+  <script src="lib/jquery-ui-1.10.2.custom.js"></script>
+  <script src="lib/hoverIntent.min.js"></script>
+  <script src="lib/youtubewidgetapi.js"></script>
+  <script src="qv.js" charset="utf-8"></script>
+  <script charset="utf-8">
+const info = {
+ "kind": "youtube#videoListResponse",
+ "etag": "\"XI7nbFXulYBIpL0ayR_gDh3eu1k/CEHeZPcnhqbN4naeIPTZD0XvDcI\"",
+ "pageInfo": {
+  "totalResults": 1,
+  "resultsPerPage": 1
+ },
+ "items": [
+  {
+   "kind": "youtube#video",
+   "etag": "\"XI7nbFXulYBIpL0ayR_gDh3eu1k/4gxdtCP7U16meLQWMiTzmJDzLYo\"",
+   "id": "spUNpyF58BY",
+   "snippet": {
+    "publishedAt": "2018-01-26T18:47:48.000Z",
+    "channelId": "UCYO_jab_esuFRV4b17AJtAw",
+    "title": "But what is the Fourier Transform?  A visual introduction.",
+    "description": "An animated introduction to the Fourier Transform, winding graphs around circles.\nSupported by viewers: https://www.patreon.com/3blue1brown\nSpecial thanks to these Patrons: http://3b1b.co/fourier-thanks\n\nFollow-on video about the uncertainty principle: https://youtu.be/MBnnXbOM5S4\n\nPuzzler at the end by Jane Street: https://janestreet.com/3b1b\n\nMusic by Vincent Rubinetti:\nhttps://vincerubinetti.bandcamp.com/album/the-music-of-3blue1brown\n\n------------------\n\n3blue1brown is a channel about animating math, in all senses of the word animate.  And you know the drill with YouTube, if you want to stay posted on new videos, subscribe, and click the bell to receive notifications (if you're into that).\n\nIf you are new to this channel and want to see more, a good place to start is this playlist: http://3b1b.co/recommended\n\nVarious social media stuffs:\nWebsite: https://www.3blue1brown.com\nTwitter: https://twitter.com/3Blue1Brown\nPatreon: https://patreon.com/3blue1brown\nFacebook: https://www.facebook.com/3blue1brown\nReddit: https://www.reddit.com/r/3Blue1Brown",
+    "thumbnails": {
+     "default": {
+      "url": "https://i.ytimg.com/vi/spUNpyF58BY/default.jpg",
+      "width": 120,
+      "height": 90
+     },
+     "medium": {
+      "url": "https://i.ytimg.com/vi/spUNpyF58BY/mqdefault.jpg",
+      "width": 320,
+      "height": 180
+     },
+     "high": {
+      "url": "https://i.ytimg.com/vi/spUNpyF58BY/hqdefault.jpg",
+      "width": 480,
+      "height": 360
+     },
+     "standard": {
+      "url": "https://i.ytimg.com/vi/spUNpyF58BY/sddefault.jpg",
+      "width": 640,
+      "height": 480
+     },
+     "maxres": {
+      "url": "https://i.ytimg.com/vi/spUNpyF58BY/maxresdefault.jpg",
+      "width": 1280,
+      "height": 720
+     }
+    },
+    "channelTitle": "3Blue1Brown",
+    "tags": [
+     "Mathematics",
+     "fourier transform",
+     "three blue one brown",
+     "three",
+     "3 blue 1 brown",
+     "fourier",
+     "fourier series",
+     "three brown one blue",
+     "one",
+     "3 brown 1 blue",
+     "3brown1blue",
+     "brown",
+     "3b1b",
+     "blue"
+    ],
+    "categoryId": "27",
+    "liveBroadcastContent": "none",
+    "defaultLanguage": "en",
+    "localized": {
+     "title": "But what is the Fourier Transform?  A visual introduction.",
+     "description": "An animated introduction to the Fourier Transform, winding graphs around circles.\nSupported by viewers: https://www.patreon.com/3blue1brown\nSpecial thanks to these Patrons: http://3b1b.co/fourier-thanks\n\nFollow-on video about the uncertainty principle: https://youtu.be/MBnnXbOM5S4\n\nPuzzler at the end by Jane Street: https://janestreet.com/3b1b\n\nMusic by Vincent Rubinetti:\nhttps://vincerubinetti.bandcamp.com/album/the-music-of-3blue1brown\n\n------------------\n\n3blue1brown is a channel about animating math, in all senses of the word animate.  And you know the drill with YouTube, if you want to stay posted on new videos, subscribe, and click the bell to receive notifications (if you're into that).\n\nIf you are new to this channel and want to see more, a good place to start is this playlist: http://3b1b.co/recommended\n\nVarious social media stuffs:\nWebsite: https://www.3blue1brown.com\nTwitter: https://twitter.com/3Blue1Brown\nPatreon: https://patreon.com/3blue1brown\nFacebook: https://www.facebook.com/3blue1brown\nReddit: https://www.reddit.com/r/3Blue1Brown"
+    },
+    "defaultAudioLanguage": "en"
+   },
+   "statistics": {
+    "viewCount": "1435883",
+    "likeCount": "55892",
+    "dislikeCount": "422",
+    "favoriteCount": "0",
+    "commentCount": "3505"
+   }
+  }
+ ]
+};
+
+    const video_link =  "https://www.youtube.com/watch?v=spUNpyF58BY";
+    var video_id = QuickViewYT.video_id_from_link({href: video_link});
+    QuickView.show_video(video_id);
+    qv_add_info(info)
+  </script>
+</html>
