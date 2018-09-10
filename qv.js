@@ -282,7 +282,7 @@ var quickview = function() {
         })
     }
 
-    function linkThumbnails(node, hoverTime) {
+    function linkThumbnails(node, hoverTime = 370) {
         var links = get_all_thumbnail_links(node);
         links.forEach(l => addHoverIntent(l, hoverTime));
     }
@@ -310,7 +310,6 @@ var quickview = function() {
 
     // Takes a <a> tag with href to a YouTube url and pops up qv
     function show_qv(video_link) {
-      console.log('showing qv')
       var video_id = QuickViewYT.video_id_from_link(video_link);
       if (QuickView.is_showing(video_id)) { return; }
 
@@ -381,17 +380,12 @@ var quickview = function() {
     function watch_for_new_thumbnails() {
       var observer = new MutationObserver(function(mutations) {
         mutations.filter(m => m.type === 'childList')
-                 .map(m => m.addedNodes)
-                 .reduce((p, n) => p.concat(n), [])
-                 .forEach(linkThumbnails)
+                 .forEach(m => m.addedNodes.forEach((v) => linkThumbnails(v)));
       });
-      var config = { attributes: true, childList: true, characterData: true };
+      var config = { childList: true, subtree: true };
       var _observe = (_, v) => observer.observe(v, config);
 
-      $('ytd-shelf-renderer').each(_observe);
-      $('.channels-browse-content-grid').each(_observe);
-      $('.section-list').each(_observe);
-      $('#watch-more-related').each(_observe);
+      $('ytd-app').each(_observe);
     }
 
     initialize();
